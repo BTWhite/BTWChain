@@ -1,0 +1,29 @@
+<!--/ VOTETO INFO MODAL -->
+<div class="modal fade" id="votetoCtrl" tabindex="-1" role="dialog" ng-controller="votetoCtrl" ng-init="init()">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{'VOTE_TITLE' | translate}}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info" role="alert">
+                    {{'VOTE_TIP' | translate}} <strong>({{'NEED_PAY' | translate}} 0.1 BTW)</strong>
+                </div>
+                <ul class="list-group" style="margin-bottom: 15px;">
+                    <li class="list-group-item" ng-repeat="i in showusername"><b>{{ i.username }}</b><div class="list-group-addres">{{ i.address }}</div></li>
+                </ul>
+                <div class="form-group row" ng-show="userService.secondPublicKey">
+                    <label class="col-3 col-form-label">{{'SECOND_PASSWORD' | translate}}</label>
+                    <div class="col-9">
+                        <input class="form-control" maxlength="16" ng-model="secondpassword" type="password">
+                    </div>
+                </div>
+                <button type="button" ng-click="checkvoteto()" class="btn btn-success btn-lg btn-block">{{'CONFIRM' | translate}} {{'VOTE' | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--/ END: VOTETO INFO MODAL -->

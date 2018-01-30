@@ -1,0 +1,62 @@
+<!--/ TRANSACTION MODAL -->
+<div class="modal fade" id="transferCtrl" tabindex="-1" role="dialog" ng-controller="transferCtrl" ng-init="init()" ng-show="isLogin">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Transfer</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="padding: 20px;">
+                <div class="alert alert-info" role="alert">
+                    {{'PAY_TIP' | translate}}
+                </div>
+                <div class="form-group row">
+                    <label class="col-3 col-form-label">{{'SENDER' | translate}}</label>
+                    <div class="col-9">
+                        <input class="form-control" type="text" required ng-model="sent" disabled>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-3 col-form-label">{{'RECIPIENT' | translate}}</label>
+                    <div class="col-9">
+                        <input class="form-control" type="text" required ng-model="fromto" ng-trim="true"  ng-change="resetSent()">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-3 col-form-label">{{'AMOUNTS' | translate}}</label>
+                    <div class="col-9">
+                        <input class="form-control" type="number" required ng-model="amount" ng-change="resetSent()" ng-trim="true">
+                    </div>
+                </div>
+                <div class="form-group row" ng-show="currencyName">
+                    <label class="col-3 col-form-label">{{'ASSET_NAME' | translate}}</label>
+                    <div class="col-9">
+                        <input class="form-control" type="text" ng-model="currencyName">
+                    </div>
+                </div>
+                <div class="form-group row" ng-show="userService.secondPublicKey">
+                    <label class="col-3 col-form-label">{{'SECOND_PASSWORD' | translate}}</label>
+                    <div class="col-9">
+                        <input class="form-control" type="password" ng-model="secondPassword" ng-change="resetSent()">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-3 col-form-label">{{'FEES' | translate}}</label>
+                    <div class="col-9">
+                        <input class="form-control" type="text" ng-model="fee" disabled>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-3 col-form-label">{{'REMARK' | translate}}</label>
+                    <div class="col-9">
+                        <input class="form-control" type="text" ng-model="message" placeholder="{{'REMARK_TIP' | translate}} 0~255">
+                    </div>
+                </div>
+                <button class="btn btn-success btn-lg btn-block" type="button" ng-click="sentMsg()" ng-disabled="!isSendSuccess" ng-class="{'invalidBtn':!isSendSuccess}">{{'SEND' | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--/ END: TRANSACTION MODAL -->

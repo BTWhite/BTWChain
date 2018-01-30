@@ -1,0 +1,150 @@
+<!doctype html>
+<html ng-app="btw">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Bitcoin White</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta content="telephone=no" name="format-detection"/>
+    <link href="./favicon.ico" rel="icon" type="image/x-icon" />
+    <link rel="stylesheet" href="./assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./assets/css/app.main.css">
+    <link rel="stylesheet" href="./assets/js/angular/angular-csp.css">
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-56406783-4"></script><script>window.dataLayer = window.dataLayer || [];function gtag() {dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-56406783-4');</script>
+</head>
+<body ng-class="{'isbg':!userlogin}">
+    <!--/ BODY MASK -->
+    <div ng-class={'bodyMask':isBodyMask}></div>
+    <!--/ END: BODY MASK -->
+    <!--/ LOADING PAGE CONTAINER -->
+    <div ng-hide="!isLoading" class="is-loading">
+        <div class='loading'>
+            <svg height='80' width='210'><ellipse cx='25' cy='20' fill='none' rx='10' ry='10'></ellipse></svg>
+            <svg height='80' width='210'><ellipse cx='25' cy='20' fill='none' rx='10' ry='10'></ellipse></svg>
+            <svg height='80' width='210'><ellipse cx='25' cy='20' fill='none' rx='10' ry='10'></ellipse></svg>
+            <svg height='80' width='210'><ellipse cx='25' cy='20' fill='none' rx='10' ry='10'></ellipse></svg>
+            <svg height='80' width='210'><ellipse cx='25' cy='20' fill='none' rx='10' ry='10'></ellipse></svg>
+            <svg height='80' width='210'><ellipse cx='25' cy='20' fill='none' rx='10' ry='10'></ellipse></svg>
+            <svg height='80' width='210'><ellipse cx='25' cy='20' fill='none' rx='10' ry='10'></ellipse></svg>
+            <svg height='80' width='210'><ellipse cx='25' cy='20' fill='none' rx='10' ry='10'></ellipse></svg>
+            <svg height='80' width='210'><ellipse cx='25' cy='20' fill='none' rx='10' ry='10'></ellipse></svg>
+            <svg height='80' width='210'><ellipse cx='25' cy='20' fill='none' rx='10' ry='10'></ellipse></svg>
+        </div>
+    </div>
+    <!--/ END: LOADING PAGE CONTAINER -->
+    <!--/ DEFAULT CONTAINER -->
+    <div id="wallet" ng-show="userlogin" class="ng-hide">
+        <div class="leftmenu">
+            <ul id="route">
+                <a onclick="appMain.MenuRoute(this);" data-toggle="false" style="border-bottom: 1px solid #fbf2ec;"><li><i class="os-icon os-icon-hamburger-menu-1" style="margin-left: 8px;font-size: 25px;"></i> <span class="hide name">Bitcoin White</span></li></a>
+                <a ng-href="#/home" ng-class="{'active':$root.active=='home'}"><li><i class="os-icon os-icon-fingerprint" style="margin-left: 7px;"></i> <span class="hide">{{'HOME' | translate}}</span></li></a>
+                <a ng-href="#/blockchain" ng-class="{'active':$root.active=='blockchain'}"><li><i class="os-icon os-icon-hierarchy-structure-2" style="margin-left: 7px;"></i> <span class="hide">{{'BLOCKS' | translate}}</span></li></a>
+                <a ng-href="#/vote" ng-class="{'active':$root.active=='vote'}"><li><i class="os-icon os-icon-pie-chart-3" style="margin-left: 8px;"></i> <span class="hide">{{'VOTE' | translate}}</span></li></a>
+                <a ng-href="#/blockforging" ng-class="{'active':$root.active=='blockforging'}"><li><i class="os-icon os-icon-ui-92" style="margin-left: 8px;"></i> <span class="hide">{{'FORGING' | translate}}</span></li></a>
+                <a ng-click="assigneeShowInfo()" ng-show="$root.active=='blockforging'"><li ng-show="!delegate.username"><i class="os-icon os-icon-ui-22" style="margin-left: 8px;"></i> <span class="hide">{{'DELEGATE_REGISTER' | translate}}</span></li><li ng-show="delegate.username"><i class="os-icon os-icon-ui-22" style="margin-left: 5px;"></i> <span class="hide">{{delegate.username}}</span></li></a>
+                <a ng-href="#/peer" ng-class="{'active':$root.active=='peer'}"><li><i class="os-icon os-icon-robot-2" style="margin-left: 5px;"></i> <span class="hide">{{'PEERS' | translate}}</span></li></a>
+            </ul>
+        </div>
+        <div class="content">
+            <div ng-show="userlogin" ng-class="{'bodycontent':userlogin}" ng-view></div>
+        </div>
+    </div>
+    <div ng-show="!userlogin" ng-class="{'bodycontent':userlogin}" ng-view></div>
+    <!--/ END: DEFAULT CONTAINER -->
+    <!--/ MODALS -->
+    <div id="transfer" ng-show="sendtransferinfo" ng-include="'partials/modal/transfer/index.html'"></div>
+    <div id="personal" ng-show="personalinfo" ng-include="'partials/modal/personal/index.html'"></div>
+    <div id="assignee" ng-show="assigneeinfo" ng-include="'partials/modal/assignee/index.html'"></div>
+    <div id="dealinfo" ng-show="dealdetailinfo" ng-include="'partials/modal/dealinfo/index.html'"></div>
+    <div id="blockdetail" ng-show="blockdetailinfo" ng-include="'partials/modal/blockdetail/index.html'"></div>
+    <div id="accountdetail" ng-show="accountdetailinfo" ng-include="'partials/modal/accountdetail/index.html'"></div>
+    <div id="voteto" ng-show="votetoinfo" ng-include="'partials/modal/voteto/index.html'"></div>
+    <div id="deletevoteto" ng-show="deletevotetoinfo" ng-include="'partials/modal/deletevote/index.html'"></div>
+    <!--/ END: MODALS -->
+    <!--/ JAVASCRIPT -->
+    <script type="text/javascript" src="./assets/js/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="./assets/js/tether/dist/js/tether.min.js"></script>
+    <script type="text/javascript" src="./assets/js/bootstrap-4.0.0-alpha.6/bootstrap.min.js"></script>
+    <script type="text/javascript" src="./assets/js/moment/moment.js"></script>
+    <script type="text/javascript" src="./assets/js/chart.js/chart.bundle.min.js"></script>
+    <script type="text/javascript" src="./assets/js/angular/angular.min.js"></script>
+    <script type="text/javascript" src="./assets/js/angular-bootstrap/ui-bootstrap.js"></script>
+    <script type="text/javascript" src="./assets/js/angular-qr/angular-qr.min.js"></script>
+    <script type="text/javascript" src="./assets/js/angular-translate/angular-translate.js"></script>
+    <script type="text/javascript" src="./assets/js/angular-route/angular-route.js"></script>
+    <script type="text/javascript" src="./assets/js/angular-cookie/angular-cookie.min.js"></script>
+    <script type="text/javascript" src="./assets/js/jquery.toaster/jquery.toaster.js"></script>
+    <script type="text/javascript" src="./assets/js/owlcarousel2-2.2.1/owl.carousel.min.js"></script>
+    <script type="text/javascript" src="./assets/js/ng-table/dist/ng-table.js"></script>
+    <script type="text/javascript" src="./assets/js/bitcore-mnemonic.js"></script>
+    <script type="text/javascript" src="./assets/js/browserify-btw.js"></script>
+    <script type="text/javascript" src="./translations/en-us.js"></script>
+    <script type="text/javascript" src="./assets/js/app.main.js"></script>
+    <script type="text/javascript" src="./assets/js/app.module.js"></script>
+    <script type="text/javascript" src="./assets/js/app.route.js"></script>
+    <script type="text/javascript" src="./assets/js/app.run.js"></script>
+    <script type="text/javascript" src="./service/nodeService.js"></script>
+    <script type="text/javascript" src="./service/apiService.js"></script>
+    <script type="text/javascript" src="./service/postSerivice.js"></script>
+    <script type="text/javascript" src="./service/userService.js"></script>
+    <script type="text/javascript" src="./partials/home/homeCtrl.js"></script>
+    <script type="text/javascript" src="./partials/vote/voteCtrl.js"></script>
+    <script type="text/javascript" src="./partials/login/loginCtrl.js"></script>
+    <script type="text/javascript" src="./partials/modal/transfer/transferCtrl.js"></script>
+    <script type="text/javascript" src="./partials/peer/peerCtrl.js"></script>
+    <script type="text/javascript" src="./partials/asset/assetCtrl.js"></script>
+    <script type="text/javascript" src="./partials/addACL/addaclCtrl.js"></script>
+    <script type="text/javascript" src="./partials/reduceACL/reduceaclCtrl.js"></script>
+    <script type="text/javascript" src="./partials/application/applicationCtrl.js"></script>
+    <script type="text/javascript" src="./partials/blockforging/blockforgingCtrl.js"></script>
+    <script type="text/javascript" src="./partials/blockchain/blockchainCtrl.js"></script>
+    <script type="text/javascript" src="./partials/modal/personal/personalCtrl.js"></script>
+    <script type="text/javascript" src="./partials/modal/assignee/assigneeCtrl.js"></script>
+    <script type="text/javascript" src="./partials/modal/blockdetail/blockdetailCtrl.js"></script>
+    <script type="text/javascript" src="./partials/modal/accountdetail/accountdetailCtrl.js"></script>
+    <script type="text/javascript" src="./partials/modal/dealinfo/dealinfoCtrl.js"></script>
+    <script type="text/javascript" src="./partials/modal/deletevote/deletevoteCtrl.js"></script>
+    <script type="text/javascript" src="./partials/modal/voteto/votetoCtrl.js"></script>
+    <script type="text/javascript" src="./filter/timestampFilter.js"></script>
+    <script type="text/javascript" src="./filter/catalogsFilter.js"></script>
+    <script type="text/javascript" src="./filter/saveCheckfilter.js"></script>
+    <script type="text/javascript" src="./filter/savecheckpbulish.js"></script>
+    <script type="text/javascript" src="./filter/saveCodeFilter.js"></script>
+    <script type="text/javascript" src="./filter/typeFilter.js"></script>
+    <script type="text/javascript" src="./filter/feeFilter.js"></script>
+    <script type="text/javascript" src="./filter/histroyFilter.js"></script>
+    <script type="text/javascript" src="./filter/xasFilter.js"></script>
+    <script type="text/javascript" src="./filter/unitFilter.js"></script>
+    <script type="text/javascript" src="./partials/tips/tips.js"></script>
+    <script>
+        $(document).ready(function(){
+            let version = navigator.userAgent.toLowerCase();
+            let reg = /chrome\/[\d.]+/gi;
+            let result;
+            if (version.indexOf("chrome") > 0) {
+                result = version.match(reg);
+                version = (result + "").replace(/[^0-9]/ig, "");
+                if (Number(String(version).slice(0,2)) < 59) {
+                    appMain.Toaster('The version of your browser is lower then requirement, plz update to the latest version', 'Error', 'danger');
+                }
+            } else {
+                appMain.Toaster('Please be sure using the lastest version of chrome browser', 'Error', 'danger');
+            }
+            $.ajax({
+                type:'HEAD',
+                url:window.location.href,
+                complete:function(xhr,data){
+                    let row = xhr.getResponseHeader('Date');
+                    let serveTime = new Date(row).getTime();
+                    let localTime = new Date().getTime();
+                    if (Math.abs(localTime - serveTime) > 30 * 60 * 1000) {
+                        appMain.Toaster('Your local time is different with server，plz adjust your computer', 'Error', 'danger');
+                    }
+                }
+            });
+        });
+    </script>
+    <!--/ END: JAVASCRIPT -->
+</body>
+</html>

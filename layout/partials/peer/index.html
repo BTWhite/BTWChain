@@ -1,0 +1,63 @@
+<!--/ PEER PAGE -->
+<div ng-include="'partials/common/crumb/crumb.html'"></div>
+<div id="peer" ng-controller="peerCtrl" ng-init="init()">
+    <div class="card card-border mbottom">
+        <div class="card-block" style="padding: 1.25rem 1.25rem 0 1.25rem;">
+            <div class="text-center animate-spin" style="margin-bottom: 20px;" ng-hide="!progress"><i style="font-size: 50px;color: #7a96b3;" class="os-icon os-icon-grid-18"></i></div>
+            <div ng-show="table" class="ng-hide">
+                <h5>{{'PEER_LIST' | translate}}</h5>
+                <div class="table-responsive">
+                    <table class="table" ng-table="pertableparams" template-pagination="custom/pager">
+                        <thead>
+                            <tr>
+                                <td>IP</td>
+                                <td>{{'VERSION' | translate}}</td>
+                                <td>{{'OPERATING_SYSTEM' | translate}}</td>
+                            </tr>
+                        </thead>
+                        <tr ng-repeat="i in $data">
+                            <td>
+                                <div class="cell-both">
+                                    <b class="td-name hide">IP: </b>{{i.ip}}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="cell-both">
+                                    <b class="td-name hide">{{'VERSION' | translate}}: </b>{{i.version || 'Not detected'}}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="cell-both">
+                                    <b class="td-name hide">{{'OPERATING_SYSTEM' | translate}}: </b>{{i.os || 'Not detected'}}
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <script type="text/ng-template" id="custom/pager">
+                        <div style="width: fit-content;margin: auto;">
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination">
+                                    <li class="page-item" ng-class="{'disabled': !page.active && !page.current, 'active': page.current}" ng-repeat="page in pages" ng-switch="page.type">
+                                        <a class="page-link" ng-switch-when="prev" ng-click="params.page(page.number)" href="" aria-label="Previous">
+                                            <span aria-hidden="true">&laquo;</span>
+                                            <span class="sr-only">Previous</span>
+                                        </a>
+                                        <a class="page-link" ng-switch-when="first" ng-click="params.page(page.number)" href=""><span ng-bind="page.number"></span></a>
+                                        <a class="page-link" ng-switch-when="page" ng-click="params.page(page.number)" href=""><span ng-bind="page.number"></span></a>
+                                        <a class="page-link" ng-switch-when="more" ng-click="params.page(page.number)" href="">&#8230;</a>
+                                        <a class="page-link" ng-switch-when="last" ng-click="params.page(page.number)" href=""><span ng-bind="page.number"></span></a>
+                                        <a class="page-link" ng-switch-when="next" ng-click="params.page(page.number)" href="" aria-label="Next">
+                                            <span aria-hidden="true">&raquo;</span>
+                                            <span class="sr-only">Next</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--/ END: HOME PAGE -->

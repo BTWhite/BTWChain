@@ -1,0 +1,282 @@
+<!--/ HOME PAGE -->
+<div id="home" ng-controller="homeCtrl" ng-init="init()">
+    <div class="card card-border mbottom">
+        <div class="card-block to-tabs">
+            <ul id="tabs" class="nav nav-tabs">
+                <li class="nav-item active" data-href="#wallets">
+                    <a class="nav-link" style="overflow: hidden;"><i class="tabimg pull-left os-icon os-icon-wallet-loaded" style="margin-right: 15px;"></i><span class="pull-left ecllip">Bitcoin white wallet</span></a>
+                </li>
+                <li class="nav-item" data-href="#portfolio">
+                    <a class="nav-link" style="overflow: hidden;"><i class="tabimg pull-left os-icon os-icon-delivery-box-2" style="margin-right: 15px;"></i><span class="pull-left ecllip">Portfolio</span></a>
+                </li>
+                <li>
+                    <div style="margin-top: 15px;">
+                        <input class="form-control" placeholder="Start typing to search..." type="text" ng-model="searchStr" ng-keyup="$event.keyCode == 13 && search()">
+                    </div>
+                </li>
+                <li class="nav-item" ng-click="quitout()" style="position: absolute;right: 0;">
+                    <a class="nav-link" style="overflow: hidden;"><i class="tabimg os-icon os-icon-signs-11"></i></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="tab-content">
+        <div class="tab-pane active" id="wallets" role="tabpanel">
+            <div class="crypto-carousel owl-carousel">
+                <div class="item mbottom">
+                    <div class="card coin-box card-border">
+                        <div class="card-bg-top card-btw">
+                            <span class="amount-count">{{ userService.balance | xasFilter }} BTW</span>
+                        </div>
+                        <div class="card-block text-center">
+                            <div class="icon" ng-click="showpersonalinfo()">
+                                <img class="pulse" style="width: 80px;margin: auto;background: #6e4e92;" src="./assets/images/logo.png"/>
+                            </div>
+                            <span class="color-btw">Bitcoin White</span>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><span ng-show="latestBlock.height">Sync:&nbsp;<b id="sync-block">{{latestBlock.height }}</b> - Blocks</span><i ng-show="!latestBlock.height">Loading...</i></li>
+                        </ul>
+                        <div class="card-block">
+                            <button type="button" ng-click="showsendtransfer()" class="btn btn-info btn-block">Transfer</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="item mbottom">
+                    <div class="card coin-box card-border">
+                        <div class="card-bg-top card-btc">
+                            <span class="amount-count">0.000000000 BTC</span>
+                        </div>
+                        <div class="card-block text-center">
+                            <div class="icon">
+                                <img style="width: 80px;margin: auto;" src="./assets/images/crypto-icons/Bitcoin.svg"/>
+                            </div>
+                            <span class="color-btc">Bitcoin (disabled)</span>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Sync:&nbsp;<i>None</i></li>
+                        </ul>
+                        <div class="card-block">
+                            <div class="btn-group" data-toggle="buttons" style="width: 100%;">
+                                <label class="btn btn-info active disabled" style="width: 100%;margin-bottom: 0;">
+                                    <input type="radio" name="options" autocomplete="off" checked>Transfer
+                                </label>
+                                <label class="btn btn-success disabled" style="width: 100%;margin-bottom: 0;">
+                                    <input type="radio" name="options" autocomplete="off">Transactions
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="item mbottom">
+                    <div class="card coin-box card-border">
+                        <div class="card-bg-top card-eth">
+                            <span class="amount-count">0.000000000 ETH</span>
+                        </div>
+                        <div class="card-block text-center">
+                            <div class="icon">
+                                <img style="width: 80px;margin: auto;" src="./assets/images/crypto-icons/Ethereum.svg"/>
+                            </div>
+                            <span class="color-eth">Ethereum (disabled)</span>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Sync:&nbsp;<i>None</i></li>
+                        </ul>
+                        <div class="card-block">
+                            <div class="btn-group" data-toggle="buttons" style="width: 100%;">
+                                <label class="btn btn-info active disabled" style="width: 100%;margin-bottom: 0;">
+                                    <input type="radio" name="options" autocomplete="off" checked>Transfer
+                                </label>
+                                <label class="btn btn-success disabled" style="width: 100%;margin-bottom: 0;">
+                                    <input type="radio" name="options" autocomplete="off">Transactions
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="item mbottom">
+                    <div class="card coin-box card-border">
+                        <div class="card-bg-top card-dash">
+                            <span class="amount-count">0.000000000 DASH</span>
+                        </div>
+                        <div class="card-block text-center">
+                            <div class="icon">
+                                <img style="width: 80px;margin: auto;" src="./assets/images/crypto-icons/Dash.svg"/>
+                            </div>
+                            <span class="color-dash">Dash (disabled)</span>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Sync:&nbsp;<i>None</i></li>
+                        </ul>
+                        <div class="card-block">
+                            <div class="btn-group" data-toggle="buttons" style="width: 100%;">
+                                <label class="btn btn-info disabled active" style="width: 100%;margin-bottom: 0;">
+                                    <input type="radio" name="options" autocomplete="off" checked>Transfer
+                                </label>
+                                <label class="btn btn-success disabled" style="width: 100%;margin-bottom: 0;">
+                                    <input type="radio" name="options" autocomplete="off">Transactions
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="item mbottom">
+                    <div class="card coin-box card-border">
+                        <div class="card-bg-top card-ltc">
+                            <span class="amount-count">0.000000000 LTC</span>
+                        </div>
+                        <div class="card-block text-center">
+                            <div class="icon">
+                                <img style="width: 80px;margin: auto;" src="./assets/images/crypto-icons/Litecoin.svg"/>
+                            </div>
+                            <span class="color-ltc">Litecoin (disabled)</span>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Sync:&nbsp;<i>None</i></li>
+                        </ul>
+                        <div class="card-block">
+                            <div class="btn-group" data-toggle="buttons" style="width: 100%;">
+                                <label class="btn btn-info disabled active" style="width: 100%;margin-bottom: 0;">
+                                    <input type="radio" name="options" autocomplete="off" checked>Transfer
+                                </label>
+                                <label class="btn btn-success disabled" style="width: 100%;margin-bottom: 0;">
+                                    <input type="radio" name="options" autocomplete="off">Transactions
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div ng-show="table" class="card card-border ng-hide mbottom isMobile" style="overflow: hidden;">
+                <div class="card-block">
+                    <style>canvas {
+                        -moz-user-select: none;
+                        -webkit-user-select: none;
+                        -ms-user-select: none;
+                    }</style>
+                    <div>
+                        <canvas id="canvas" style="width: 100%;"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="card card-border mbottom">
+                <div class="card-block" style="padding: 1.25rem 1.25rem 0 1.25rem;">
+                    <div class="text-center animate-spin" style="margin-bottom: 20px;" ng-hide="!progress"><i style="font-size: 50px;color: #7a96b3;" class="os-icon os-icon-grid-18"></i></div>
+                    <div ng-hide="!info" class="text-center card-infos">
+                        <div><i class="os-icon os-icon-cancel-circle"></i></div>
+                        <h5>{{'INFO_1' | translate}}</h5>
+                    </div>
+                    <div ng-show="table" class="ng-hide">
+                        <h5>{{'MY_TRSACTIONS' | translate}}</h5>
+                        <div class="table-responsive">
+                            <table class="table" ng-table="hometableparams" template-pagination="custom/pager">
+                                <thead>
+                                <tr>
+                                    <td>ID</td>
+                                    <td>{{'TYPE' | translate}}</td>
+                                    <td>{{'SENDER' | translate}}</td>
+                                    <td>{{'RECIPIENT' | translate}}</td>
+                                    <td>{{'DATE' | translate}}</td>
+                                    <td>{{'AMOUNTS' | translate}}({{'FEES' | translate}})</td>
+                                    <td>{{'REMARK' | translate}}</td>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="i in $data">
+                                    <td>
+                                        <div class="cell-both" data-container="body" data-toggle="popover" data-placement="top" data-content="{{i.id}}">
+                                            <b class="td-name hide">ID: </b>{{i.id}}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="cell-both">
+                                            <b class="td-name hide">{{'TYPE' | translate}}: </b>{{i.type | typeFilter}}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="cell-both">
+                                            <b class="td-name hide">{{'SENDER' | translate}}: </b><i class="level" ng-click="showaccountdetailInfo(i.senderId)">{{i.senderId}}</i>
+                                        </div>
+                                    </td>
+                                    <td class="item_accept">
+                                        <div class="cell-both">
+                                            <b class="td-name hide">{{'RECIPIENT' | translate}}: </b><i class="level" ng-click="showaccountdetailInfo(i.recipientId)">{{i.recipientId || 'SYSTEM' | translate}}</i>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="cell-both">
+                                            <b class="td-name hide">{{'DATE' | translate}}: </b>{{i.timestamp | timestampFilter}}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="cell-both">
+                                            <b class="td-name hide">{{'AMOUNTS' | translate}}: </b>{{i.amount | xasFilter}}({{i.fee | xasFilter}})
+                                        </div>
+                                    </td>
+                                    <td class="nobr">
+                                        <div class="cell-both">
+                                            <b class="td-name hide">{{'REMARK' | translate}}: </b>{{i.message || 'none'}}
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <script type="text/ng-template" id="custom/pager">
+                            <div style="width: fit-content;margin: auto;">
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination">
+                                        <li class="page-item" ng-class="{'disabled': !page.active && !page.current, 'active': page.current}" ng-repeat="page in pages" ng-switch="page.type">
+                                            <a class="page-link" ng-switch-when="prev" ng-click="params.page(page.number)" href="" aria-label="Previous">
+                                                <span aria-hidden="true">&laquo;</span>
+                                                <span class="sr-only">Previous</span>
+                                            </a>
+                                            <a class="page-link" ng-switch-when="first" ng-click="params.page(page.number)" href=""><span ng-bind="page.number"></span></a>
+                                            <a class="page-link" ng-switch-when="page" ng-click="params.page(page.number)" href=""><span ng-bind="page.number"></span></a>
+                                            <a class="page-link" ng-switch-when="more" ng-click="params.page(page.number)" href="">&#8230;</a>
+                                            <a class="page-link" ng-switch-when="last" ng-click="params.page(page.number)" href=""><span ng-bind="page.number"></span></a>
+                                            <a class="page-link" ng-switch-when="next" ng-click="params.page(page.number)" href="" aria-label="Next">
+                                                <span aria-hidden="true">&raquo;</span>
+                                                <span class="sr-only">Next</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane" id="portfolio" role="tabpanel">
+            <div class="row row-box">
+                <div class="col-md-12 col-lg-row text-center">
+                    <div class="card card-border mbottom">
+                        <div class="card-block card-infos" style="padding: 1.25rem 1.25rem 0 1.25rem;">
+                            <div><i class="os-icon os-icon-cancel-circle"></i></div>
+                            <h5>This item will work with the next update</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(function () {
+            $('#tabs').find('> .nav-item').click(function (e) {
+                e.preventDefault();
+                $('#tabs').find('> .nav-item').each(function (k, i) {
+                    $(i).removeClass('active');
+                });
+                $('.tab-content > .tab-pane').each(function (k, i) {
+                    $(i).removeClass('active');
+                });
+                $(this).addClass('active');
+                $($(e.currentTarget).data('href')).addClass('active');
+            });
+            appMain.Carousel();
+            appMain.BlockCountSync();
+        });
+    </script>
+</div>
+<!--/ END: HOME PAGE -->

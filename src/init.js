@@ -7,6 +7,7 @@ const async = require('async');
 const z_schema = require('z-schema');
 const ip = require('ip');
 const Sequence = require('./utils/sequence.js');
+const slots = require('./utils/slots.js');
 
 var moduleNames = [
     'server',
@@ -23,7 +24,7 @@ var moduleNames = [
     'uia',
     'dapps',
     'sql',
-    'blocks'
+    'blocks',
 ];
 
 function getPublicIp() {
@@ -46,7 +47,7 @@ function getPublicIp() {
     return publicIp;
 }
 
-module.exports = function (options, done) {
+module.exports = function(options, done) {
     var modules = [];
     var dbFile = options.dbFile;
     var appConfig = options.appConfig;
@@ -56,7 +57,6 @@ module.exports = function (options, done) {
         appConfig.publicIp = getPublicIp();
     }
 
-    // noinspection JSAnnotator
     async.auto({
         config: function (cb) {
             cb(null, appConfig);
@@ -79,7 +79,7 @@ module.exports = function (options, done) {
 
         scheme: function (cb) {
             z_schema.registerFormat("hex", function (str) {
-                var b = null;
+                var b = null
                 try {
                     b = new Buffer(str, "hex");
                 } catch (e) {
@@ -106,7 +106,11 @@ module.exports = function (options, done) {
             z_schema.registerFormat('splitarray', function (str) {
                 try {
                     var a = str.split(',');
-                    return a.length > 0 && a.length <= 1000;
+                    if (a.length > 0 && a.length <= 1000) {
+                        return true;
+                    } else {
+                        return false;
+                    }
                 } catch (e) {
                     return false;
                 }
@@ -157,7 +161,7 @@ module.exports = function (options, done) {
             var cors = require('cors');
             var app = express();
 
-            app.use(compression({level: 6}));
+            app.use(compression({ level: 6 }));
             app.use(cors());
             app.options("*", cors());
 
@@ -257,36 +261,55 @@ module.exports = function (options, done) {
                 var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
                 scope.logger.debug(req.method + " " + req.url + " from " + ip);
+
+                /* Instruct browser to deny display of <frame>, <iframe> regardless of origin.
+                 *
+                 * RFC -> https://tools.ietf.org/html/rfc7034
+                 */
                 res.setHeader('X-Frame-Options', 'DENY');
+
+                /* Set Content-Security-Policy headers.
+                 *
+                 * frame-ancestors - Defines valid sources for <frame>, <iframe>, <object>, <embed> or <applet>.
+                 *
+                 * W3C Candidate Recommendation -> https://www.w3.org/TR/CSP/
+                 */
                 res.setHeader('Content-Security-Policy', "frame-ancestors 'none'");
 
-                if (parts.length > 1) {
-                    if (parts[1] == 'api') {
-                        /** @namespace scope.config.api.access.whiteList */
-                        if (scope.config.api.access.whiteList.length > 0) {
-                            if (scope.config.api.access.whiteList.indexOf(ip) < 0) {
-                                res.sendStatus(403);
-                            } else {
-                                next();
-                            }
-                        } else {
-                            next();
-                        }
-                    } else if (parts[1] == 'peer') {
-                        /** @namespace scope.config.peers.blackList */
-                        if (scope.config.peers.blackList.length > 0) {
-                            if (scope.config.peers.blackList.indexOf(ip) >= 0) {
-                                res.sendStatus(403);
-                            } else {
-                                next();
-                            }
-                        } else {
-                            next();
-                        }
-                    } else {
-                        next();
-                    }
-                } else {
+                //allow CORS
+                res.setHeader("Access-Control-Allow-Origin", "*");
+                res.setHeader("Access-Control-Allow-Headers", "Origin, Content-Length,  X-Requested-With, Content-Type, Accept, request-node-status");
+                res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, HEAD, PUT, DELETE");
+
+                if (req.method == "OPTIONS"){
+                    res.sendStatus(200);
+                    scope.logger.debug("Response pre-flight request");
+                    return;
+                }
+
+                var isApiOrPeer = parts.length > 1 && (parts[1] == 'api'|| parts[1] == 'peer') ;
+                var whiteList = scope.config.api.access.whiteList;
+                var blackList = scope.config.peers.blackList;
+
+                var forbidden = isApiOrPeer && (
+                    (whiteList.length > 0 && whiteList.indexOf(ip) < 0) ||
+                    (blackList.length > 0 && blackList.indexOf(ip) >= 0) );
+
+                if (isApiOrPeer && forbidden){
+                    res.sendStatus(403);
+                }
+                else if ( isApiOrPeer && req.headers["request-node-status"] == "yes"){
+                    //Add server status info to response header
+                    var lastBlock = scope.modules.blocks.getLastBlock();
+                    res.setHeader('Access-Control-Expose-Headers',"node-status");
+                    res.setHeader("node-status",JSON.stringify({
+                        blockHeight: lastBlock.height,
+                        blockTime: slots.getRealTime(lastBlock.timestamp),
+                        blocksBehind: slots.getNextSlot() - (slots.getSlotNumber(lastBlock.timestamp) +1)
+                    }));
+                    next();
+                }
+                else{
                     next();
                 }
             });
@@ -328,7 +351,6 @@ module.exports = function (options, done) {
                     this.emit.apply(this, arguments);
                 }
             }
-
             cb(null, new Bus)
         },
 
@@ -338,17 +360,17 @@ module.exports = function (options, done) {
         },
 
         oneoff: function (cb) {
-            cb(null, new Map);
+            cb(null, new Map)
         },
 
         balanceCache: function (cb) {
             var BalanceManager = require('./utils/balance-manager.js');
-            cb(null, new BalanceManager);
+            cb(null, new BalanceManager)
         },
 
         model: ['dbLite', function (cb, scope) {
             var Model = require('./utils/model.js');
-            cb(null, new Model(scope.dbLite));
+            cb(null, new Model(scope.dbLite))
         }],
 
         base: ['dbLite', 'bus', 'scheme', 'genesisblock', function (cb, scope) {

@@ -1,0 +1,22 @@
+<!--/ ACCOUNT MODAL -->
+<div class="modal fade" id="accountdetailCtrl" tabindex="-1" role="dialog" ng-controller="accountdetailCtrl" ng-init="init()">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{'ACCOUNT_DETAIL' | translate}}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table">
+                    <tr><td>{{'ADDRESS' | translate}}:</td><td>{{account.address}}</td></tr>
+                    <tr ng-show="account.publicKey"><td>{{'PUBLIC_KEY' | translate}}:</td><td style="word-break: break-all;">{{account.publicKey}}</td></tr>
+                    <tr><td>{{'BALANCE' | translate}}:</td><td>{{account.balance  | xasFilter}}</td></tr>
+                    <tr ng-show="account.username"><td>{{'DELEGATE_NAME' | translate}}:</td><td>{{account.username}}</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!--/ END: ACCOUNT MODAL -->

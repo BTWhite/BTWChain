@@ -1,5 +1,5 @@
 {
-  "port": 8192,
+  "port": 8196,
   "address": "0.0.0.0",
   "publicIp": "",
   "logLevel": "log",
@@ -10,7 +10,12 @@
     }
   },
   "peers": {
-    "list": [{"ip":"46.105.68.73", "port":"80"}],
+    "list": [
+      {
+        "ip": "46.105.68.73",
+        "port": "80"
+      }
+    ],
     "blackList": [],
     "options": {
       "timeout": 4000
@@ -38,7 +43,7 @@
     }
   },
   "dapp": {
-    "masterpassword": "",
+    "masterpassword": "LtAB9Vg8JYFD",
     "params": {}
   }
 }

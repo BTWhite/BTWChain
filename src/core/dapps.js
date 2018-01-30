@@ -1750,7 +1750,7 @@ __cur.createBasePathes = function (cb) {
             });
         },
         function (cb) {
-            var dappsPublic = path.join(__cur.appPath, 'public', 'dist', 'dapps');
+            var dappsPublic = path.join(__cur.appPath, './', 'dapps');
             fs.exists(dappsPublic, function (exists) {
                 if (exists) {
                     return setImmediate(cb);

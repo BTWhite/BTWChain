@@ -1,0 +1,95 @@
+<!--/ BLOCKCHAIN PAGE -->
+<div ng-include="'partials/common/crumb/crumb.html'"></div>
+<div id="blockchain" ng-controller="blockchainCtrl" ng-init="init()">
+	<div class="card card-border mbottom">
+		<div class="card-block" style="padding: 1.25rem 1.25rem 0 1.25rem;">
+			<div class="text-center animate-spin" style="margin-bottom: 20px;" ng-hide="!progress"><i style="font-size: 50px;color: #7a96b3;" class="os-icon os-icon-grid-18"></i></div>
+			<div ng-show="table" class="ng-hide">
+				<h5>{{'LATEST_BLOCK' | translate}}</h5>
+				<div class="table-responsive">
+					<table class="table" ng-table="blockchaintableparams" template-pagination="custom/pager" >
+						<thead>
+							<tr>
+								<td>{{'HEIGHT' | translate}}</td>
+								<td>{{'DATE' | translate}}</td>
+								<td>ID</td>
+								<td>{{'PRODUCER' | translate}}</td>
+								<td>{{'TRANSACTIONS' | translate}}</td>
+								<td>{{'TOTAL' | translate}} {{'AMOUNTS' | translate}}</td>
+								<td>{{'TOTAL' | translate}} {{'FEES' | translate}}</td>
+								<td>{{'REWARDS' | translate}}</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="i in $data" >
+								<td>
+									<div class="cell-both" ng-click="showdetailInfo(i)">
+										<b class="td-name hide">{{'HEIGHT' | translate}}: </b>{{i.height}}
+									</div>
+								</td>
+								<td>
+									<div class="cell-both">
+										<b class="td-name hide">{{'DATE' | translate}}: </b><span ng-show="i.timestamp > 0">{{i.timestamp | timestampFilter}}</span>
+									</div>
+								</td>
+								<td>
+									<div class="cell-both" ng-click="showdetailInfo(i)" data-container="body" data-toggle="popover" data-placement="top" data-content="{{i.id}}">
+										<b class="td-name hide">ID: </b>{{i.id}}
+									</div>
+								</td>
+								<td>
+									<div class="cell-both" ng-click="showaccountdetailInfo(i.generatorId)">
+										<b class="td-name hide">{{'PRODUCER' | translate}}: </b>{{i.generatorId}}
+									</div>
+								</td>
+								<td>
+									<div class="cell-both" ng-click="showdealInfo(i)">
+										<b class="td-name hide">{{'TRANSACTIONS' | translate}}: </b>{{i.numberOfTransactions}}
+									</div>
+								</td>
+								<td>
+									<div class="cell-both">
+										<b class="td-name hide">{{'TOTAL' | translate}} {{'AMOUNTS' | translate}}: </b>{{i.totalAmount  | xasFilter }}
+									</div>
+								</td>
+								<td>
+									<div class="cell-both">
+										<b class="td-name hide">{{'TOTAL' | translate}} {{'FEES' | translate}}: </b>{{i.totalFee  | xasFilter }}
+									</div>
+								</td>
+								<td>
+									<div class="cell-both">
+										<b class="td-name hide">{{'REWARDS' | translate}}: </b>{{i.reward  | xasFilter }}
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<script type="text/ng-template" id="custom/pager">
+					<div style="width: fit-content;margin: auto;">
+						<nav aria-label="Page navigation">
+							<ul class="pagination">
+								<li class="page-item" ng-class="{'disabled': !page.active && !page.current, 'active': page.current}" ng-repeat="page in pages" ng-switch="page.type">
+									<a class="page-link" ng-switch-when="prev" ng-click="params.page(page.number)" href="" aria-label="Previous">
+										<span aria-hidden="true">&laquo;</span>
+										<span class="sr-only">Previous</span>
+									</a>
+									<a class="page-link" ng-switch-when="first" ng-click="params.page(page.number)" href=""><span ng-bind="page.number"></span></a>
+									<a class="page-link" ng-switch-when="page" ng-click="params.page(page.number)" href=""><span ng-bind="page.number"></span></a>
+									<a class="page-link" ng-switch-when="more" ng-click="params.page(page.number)" href="">&#8230;</a>
+									<a class="page-link" ng-switch-when="last" ng-click="params.page(page.number)" href=""><span ng-bind="page.number"></span></a>
+									<a class="page-link" ng-switch-when="next" ng-click="params.page(page.number)" href="" aria-label="Next">
+										<span aria-hidden="true">&raquo;</span>
+										<span class="sr-only">Next</span>
+									</a>
+								</li>
+							</ul>
+						</nav>
+					</div>
+				</script>
+			</div>
+		</div>
+	</div>
+</div>
+<!--/ END: BLOCKCHAIN PAGE -->

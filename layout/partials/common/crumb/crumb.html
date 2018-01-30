@@ -1,0 +1,8 @@
+<nav class="breadcrumb">
+    <a class="breadcrumb-item" ng-href="#/home">{{'HOME' | translate}}</a>
+    <span class="breadcrumb-item active" ng-show="$root.active == 'blockforging'">{{'FORGING' | translate}}</span>
+    <span class="breadcrumb-item active" ng-show="$root.active == 'blockchain'">{{'BLOCKS' | translate}}</span>
+    <span class="breadcrumb-item active" ng-show="$root.active == 'peer'">{{'PEERS' | translate}}</span>
+    <span class="breadcrumb-item active" ng-show="$root.active == 'asset'">{{'ASSET' | translate}}</span>
+    <span class="breadcrumb-item active" ng-show="$root.active == 'acl'"><a ng-href="#/asset">{{'ASSET' | translate}}</a>{{'UPDATE_ACL'|translate}}</span>
+</nav>

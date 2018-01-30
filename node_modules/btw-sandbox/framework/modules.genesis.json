@@ -1,0 +1,9 @@
+{
+  "api/crypto": "./api/crypto.js",
+  "api/sql": "./api/sql.js",
+  "api/dapps": "./api/dapps.js",
+  "blockchain/accounts": "./blockchain/accounts.js",
+  "logic/block": "./logic/block.js",
+  "logic/transaction": "./logic/transaction.js",
+  "system/genesis": "./system/generator.js"
+}

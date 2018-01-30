@@ -86,7 +86,7 @@ function Vote() {
             global.Config.netVersion === 'mainnet') {
             return setImmediate(cb)
         }
-        var key = sender.address + ':' + trs.type
+        var key = sender.address + ':' + trs.type;
         if (library.oneoff.has(key)) {
             return setImmediate(cb, 'Double submit')
         }
@@ -95,7 +95,7 @@ function Vote() {
     };
 
     this.undoUnconfirmed = function (trs, sender, cb) {
-        var key = sender.address + ':' + trs.type
+        var key = sender.address + ':' + trs.type;
         library.oneoff.delete(key)
         setImmediate(cb)
     };
@@ -256,7 +256,7 @@ __cur.attachApi = function () {
         library.logger.error(req.url, err.toString());
         res.status(500).send({success: false, error: err.toString()});
     });
-}
+};
 
 __cur.openAccount = function (secret, cb) {
     var hash = crypto.createHash('sha256').update(secret, 'utf8').digest();

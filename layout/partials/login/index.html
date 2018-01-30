@@ -1,0 +1,80 @@
+<!--/ LOGIN PAGE -->
+<div ng-controller="loginCtrl" ng-init="init()" class="container">
+    <div class="row">
+        <div class="col-lg-4"></div>
+        <div class="col-lg-4">
+            <form action="">
+                <div ng-show="register">
+                    <div class="card mtop-login noborder">
+                        <div class="card-bg-top card-btwbg"></div>
+                        <div class="card-block">
+                            <div class="icon">
+                                <img src="./assets/images/logo.png" />
+                            </div>
+                            <div class="form-group input-group-lg input-bp">
+                                <input class="form-control input-secret" ng-model="secret" type="text" placeholder="{{'INPUT_PASSWORD' | translate}}">
+                            </div>
+                            <button type="button" class="btn btn-btwbg btn-lg btn-block" ng-click="registerin()">{{'LOGIN' | translate}}</button>
+                            <button type="button" class="btn btn-btwbg btn-lg btn-block" ng-click="newuser()">{{'NEW_ACCOUNT' | translate}}</button>
+                        </div>
+                        <div class="card-footer ln-cart text-center text-muted">
+                            {{'INPUT_PASSWORD' | translate}}
+                        </div>
+                    </div>
+                </div>
+                <div ng-show="creatpwd">
+                    <div class="card mtop-newsecret noborder">
+                        <div class="card-bg-top card-btwbg"></div>
+                        <div class="card-block">
+                            <div class="icon">
+                                <img src="./assets/images/logo.png" />
+                            </div>
+                            <h4 class="card-title text-center">{{'NEW_PASSWORD' | translate}}</h4>
+                            <div class="secret-bind progress-bar-animated" ng-bind="newsecret"></div>
+                            <p class="text-center">{{'NEW_PWD_TIP_1' | translate}}</p>
+                            <button type="button" class="btn btn-btwbg btn-lg btn-block" ng-click="nextStep()">{{'NEXT_STEP' | translate}}</button>
+                            <button type="button" class="btn btn-btwbg btn-lg btn-block" ng-click="saveTxt('BTW-secret')">{{'SAVE_PASSWORD' | translate}}</button>
+                        </div>
+                        <div class="card-footer ln-cart text-center text-muted">
+                            {{'STEP' | translate}} <i>1</i><b>/ 2</b> {{'CREATE_MASTER_PASSWORD' | translate}}
+                        </div>
+                    </div>
+                </div>
+                <div ng-show="checkpwd">
+                    <div class="card mtop-checkpwd noborder">
+                        <div class="card-bg-top card-btwbg"></div>
+                        <div class="card-block">
+                            <div class="icon">
+                                <img src="./assets/images/logo.png" />
+                            </div>
+                            <div class="form-group input-group-lg">
+                                <textarea class="form-control txarea" type="textarea" style="padding: 5px;" ng-model="lastsecret" placeholder="{{'INPUT_PASSWORD_AGAIN' | translate}}"></textarea>
+                            </div>
+                            <p class="text-center">{{'NEW_PWD_TIP_2' | translate}}</p>
+                            <div class="confirm-checked">
+                                <input type="checkbox" class="checkbox" ng-model="confirmCheckbox" />
+                                <label class="confirm-label">{{'CONFIRM_CHECKBOX' | translate}} <a href="https://bitcoinwhite.org/doc/BitcoinWhite%20Terms%20and%20Conditions.pdf" target="_blank">{{'CONFIRM_CHECKBOX_NAMELINK' | translate}}</a></label>
+                            </div>
+                            <button type="button" class="btn btn-btwbg btn-lg btn-block" ng-click="lastcheck()">{{'CONFIRM' | translate}}</button>
+                            <button type="button" class="btn btn-btwbg btn-lg btn-block" ng-click="backto()">{{'CANCEL' | translate}}</button>
+                        </div>
+                        <div class="card-footer ln-cart text-center text-muted">
+                            {{'INPUT_PASSWORD_AGAIN' | translate}}
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-lg-4"></div>
+    </div>
+</div>
+<!--/ END: LOGIN PAGE -->
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,8 @@
+sudo: false
+language: node_js
+node_js:
+    - "node"
+env:
+  - SHA256_SRC=sha256.js
+  - SHA256_SRC=sha256.min.js
+script: "npm test"

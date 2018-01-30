@@ -148,7 +148,7 @@ __cur.banManager = function (cb) {
 
 __cur.getByFilter = function (filter, cb) {
     var sortFields = ["ip", "port", "state", "os", "version"];
-    var sortMethod = '', sortBy = ''
+    var sortMethod = '', sortBy = '';
     var limit = filter.limit || null;
     var offset = filter.offset || null;
     delete filter.limit;
@@ -256,7 +256,7 @@ Peer.prototype.listWithDApp = function (options, cb) {
 
 Peer.prototype.reset = function (cb) {
     library.dbLite.query('update peers set state = 2', function (err) {
-        if (cb) return cb(err)
+        if (cb) return cb(err);
         if (err) {
             library.logger.error('Failed to reset peers: ' + e)
         }
@@ -332,7 +332,7 @@ Peer.prototype.update = function (peer, cb) {
         port: peer.port,
         os: peer.os || null,
         version: peer.version || null
-    }
+    };
     async.series([
         function (cb) {
             library.dbLite.query("INSERT OR IGNORE INTO peers (ip, port, state, os, version) VALUES ($ip, $port, $state, $os, $version);", extend({}, params, {state: 1}), cb);
@@ -372,9 +372,9 @@ Peer.prototype.isCompatible = function (version) {
     }
     var compatibleVersion = '0.0.0';
     if (library.config.netVersion == 'testnet') {
-        compatibleVersion = '1.2.3';
+        compatibleVersion = '1.0.3';
     } else if (library.config.netVersion == 'mainnet') {
-        compatibleVersion = '1.3.1';
+        compatibleVersion = '1.0.4';
     }
     var numsCompatible = compatibleVersion.split('.').map(Number);
     for (var i = 0; i < nums.length; ++i) {
@@ -413,7 +413,7 @@ Peer.prototype.onBlockchainReady = function () {
                 __cur.updatePeerList(function (err) {
                     err && library.logger.error('updatePeerList', err);
                     library.bus.message('peerReady');
-                })
+                });
                 library.logger.info('Peers ready, stored ' + count);
             } else {
                 library.logger.warn('Peers list is empty');
