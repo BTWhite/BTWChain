@@ -1,1 +1,0 @@
-"use strict";function Background(n,o){library=o,n(null,self=this)}var private_={},self=null,library=null,modules=null;Background.prototype.onBind=function(n){modules=n},Background.prototype.onMessage=function(n){},module.exports=Background;

@@ -1,1 +1,0 @@
-"use strict";function Loader(r,a){library=a,r(null,self=this)}var self=null,library=null,modules=null;Loader.prototype.status=function(r){var a={call:"loader#status",args:{}};library.sandbox.sendMessage(a,r)},Loader.prototype.sync=function(r){var a={call:"loader#sync",args:{}};library.sandbox.sendMessage(a,r)},Loader.prototype.onBind=function(r){modules=r},module.exports=Loader;
