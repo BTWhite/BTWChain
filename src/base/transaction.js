@@ -402,9 +402,9 @@ Transaction.prototype.verify = function (trs, sender, requester, cb) { //inherit
     return setImmediate(cb, "Invalid transaction amount: " + trs.id);
   }
   // Check timestamp
-  if (slots.getSlotNumber(trs.timestamp) > slots.getSlotNumber()) {
+  /*if (slots.getSlotNumber(trs.timestamp) > slots.getSlotNumber()) {
     return setImmediate(cb, "Invalid transaction timestamp");
-  }
+  }*/
 
   try {
     private.types[trs.type].verify.call(this, trs, sender, function (err) {
