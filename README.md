@@ -35,4 +35,4 @@ node --version
 npm install
 
 # After all package installing run node
-node app.js
+node index.js
