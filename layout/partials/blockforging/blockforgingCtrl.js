@@ -14,7 +14,7 @@ angular.module('btw').controller('blockforgingCtrl', function($scope, $rootScope
 			publicKey:userService.publicKey
 		}).success(function (res) {
 			if(res.success === true){
-				$scope.delegate = res.delegate
+				$rootScope.delegate = res.delegate
 			}
 		});
 		apiService.forgingStatus({

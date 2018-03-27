@@ -2,20 +2,20 @@
 window.BtwJS = BtwJS = require('./index.js');
 },{"./index.js":2}],2:[function(require,module,exports){
 module.exports = {
-	crypto : require("./lib/transactions/crypto.js"),
-	dapp: require("./lib/transactions/dapp.js"),
-	transfer: require("./lib/transactions/transfer.js"),
-	delegate : require("./lib/transactions/delegate.js"),
-	signature : require("./lib/transactions/signature.js"),
-	transaction : require("./lib/transactions/transaction.js"),
-	vote : require("./lib/transactions/vote.js"),
-	uia: require("./lib/transactions/uia.js"),
-	storage: require("./lib/transactions/storage.js"),
-	options: require("./lib/options.js"),
-	utils: {
-		slots: require("./lib/time/slots.js"),
-		format: require("./lib/time/format.js")
-	}
+  crypto : require("./lib/transactions/crypto.js"),
+  dapp: require("./lib/transactions/dapp.js"),
+  transfer: require("./lib/transactions/transfer.js"),
+  delegate : require("./lib/transactions/delegate.js"),
+  signature : require("./lib/transactions/signature.js"),
+  transaction : require("./lib/transactions/transaction.js"),
+  vote : require("./lib/transactions/vote.js"),
+  uia: require("./lib/transactions/uia.js"),
+  storage: require("./lib/transactions/storage.js"),
+  options: require("./lib/options.js"),
+  utils: {
+    slots: require("./lib/time/slots.js"),
+    format: require("./lib/time/format.js")
+  }
 }
 },{"./lib/options.js":8,"./lib/time/format.js":9,"./lib/time/slots.js":10,"./lib/transactions/crypto.js":11,"./lib/transactions/dapp.js":12,"./lib/transactions/delegate.js":13,"./lib/transactions/signature.js":14,"./lib/transactions/storage.js":15,"./lib/transactions/transaction.js":16,"./lib/transactions/transfer.js":17,"./lib/transactions/uia.js":18,"./lib/transactions/vote.js":19}],3:[function(require,module,exports){
 (function (Buffer){
@@ -252,45 +252,45 @@ var slots = require('./slots.js');
 
 function timeAgo(time) {
   var d = slots.beginEpochTime();
-	var t = parseInt(d.getTime() / 1000);
+  var t = parseInt(d.getTime() / 1000);
 
-	time = new Date((time + t) * 1000);
+  time = new Date((time + t) * 1000);
 
-	var currentTime = new Date().getTime();
-	var diffTime = (currentTime - time.getTime()) / 1000;
+  var currentTime = new Date().getTime();
+  var diffTime = (currentTime - time.getTime()) / 1000;
 
-	if (diffTime < 60) {
+  if (diffTime < 60) {
     return Math.floor(diffTime) + ' sec ago';
-	}
-	if (Math.floor(diffTime / 60) <= 1) {
+  }
+  if (Math.floor(diffTime / 60) <= 1) {
     return Math.floor(diffTime / 60) + ' min ago';
-	}
-	if ((diffTime / 60) < 60) {
+  }
+  if ((diffTime / 60) < 60) {
     return Math.floor(diffTime / 60) + ' mins ago';
-	}
-	if (Math.floor(diffTime / 60 / 60) <= 1) {
+  }
+  if (Math.floor(diffTime / 60 / 60) <= 1) {
     return Math.floor(diffTime / 60 / 60) + ' hour ago';
-	}
-	if ((diffTime / 60 / 60) < 24) {
+  }
+  if ((diffTime / 60 / 60) < 24) {
     return Math.floor(diffTime / 60 / 60) + ' hours ago';
-	}
-	if (Math.floor(diffTime / 60 / 60 / 24) <= 1) {
+  }
+  if (Math.floor(diffTime / 60 / 60 / 24) <= 1) {
     return Math.floor(diffTime / 60 / 60 / 24) + ' day ago';
-	}
-	if ((diffTime / 60 / 60 / 24) < 30) {
+  }
+  if ((diffTime / 60 / 60 / 24) < 30) {
     return Math.floor(diffTime / 60 / 60 / 24) + ' days ago';
-	}
-	if (Math.floor(diffTime / 60 / 60 / 24 / 30) <= 1) {
+  }
+  if (Math.floor(diffTime / 60 / 60 / 24 / 30) <= 1) {
     return Math.floor(diffTime / 60 / 60 / 24 / 30) + ' month ago';
-	}
-	if ((diffTime / 60 / 60 / 24 / 30) < 12) {
+  }
+  if ((diffTime / 60 / 60 / 24 / 30) < 12) {
     return Math.floor(diffTime / 60 / 60 / 24 / 30) + ' months ago';
-	}
-	if (Math.floor((diffTime / 60 / 60 / 24 / 30 / 12)) <= 1) {
+  }
+  if (Math.floor((diffTime / 60 / 60 / 24 / 30 / 12)) <= 1) {
     return Math.floor(diffTime / 60 / 60 / 24 / 30 / 12) + ' year ago';
-	}
+  }
 
-	return Math.floor(diffTime / 60 / 60 / 24 / 30 / 12) + ' years ago';
+  return Math.floor(diffTime / 60 / 60 / 24 / 30 / 12) + ' years ago';
 }
 
 function fullTimestamp(time) {
@@ -335,68 +335,68 @@ module.exports = {
 }
 },{"./slots.js":10}],10:[function(require,module,exports){
 function getEpochTime(time) {
-	if (time === undefined) {
-		time = (new Date()).getTime();
-	}
-	var d = beginEpochTime();
-	var t = d.getTime();
-	return Math.floor((time - t) / 1000);
+  if (time === undefined) {
+    time = (new Date()).getTime();
+  }
+  var d = beginEpochTime();
+  var t = d.getTime();
+  return Math.floor((time - t) / 1000);
 }
 
 function beginEpochTime() {
-	var d = new Date(Date.UTC(2016, 5, 27, 20, 0, 0, 0))
+  var d = new Date(Date.UTC(2016, 5, 27, 20, 0, 0, 0))
 
-	return d;
+  return d;
 }
 
 var interval = 10,
     delegates = 101;
 
 function getTime(time) {
-	return getEpochTime(time);
+  return getEpochTime(time);
 }
 
 function getRealTime(epochTime) {
-	if (epochTime === undefined) {
-		epochTime = getTime()
-	}
-	var d = beginEpochTime();
-	var t = Math.floor(d.getTime() / 1000) * 1000;
-	return t + epochTime * 1000;
+  if (epochTime === undefined) {
+    epochTime = getTime()
+  }
+  var d = beginEpochTime();
+  var t = Math.floor(d.getTime() / 1000) * 1000;
+  return t + epochTime * 1000;
 }
 
 function getSlotNumber(epochTime) {
-	if (epochTime === undefined) {
-		epochTime = getTime()
-	}
+  if (epochTime === undefined) {
+    epochTime = getTime()
+  }
 
-	return Math.floor(epochTime / interval);
+  return Math.floor(epochTime / interval);
 }
 
 function getSlotTime(slot) {
-	return slot * interval;
+  return slot * interval;
 }
 
 function getNextSlot() {
-	var slot = getSlotNumber();
+  var slot = getSlotNumber();
 
-	return slot + 1;
+  return slot + 1;
 }
 
 function getLastSlot(nextSlot) {
-	return nextSlot + delegates;
+  return nextSlot + delegates;
 }
 
 module.exports = {
-	interval: interval,
-	delegates: delegates,
-	getTime: getTime,
-	getRealTime: getRealTime,
-	getSlotNumber: getSlotNumber,
-	getSlotTime: getSlotTime,
-	getNextSlot: getNextSlot,
-	getLastSlot: getLastSlot,
-	beginEpochTime: beginEpochTime
+  interval: interval,
+  delegates: delegates,
+  getTime: getTime,
+  getRealTime: getRealTime,
+  getSlotNumber: getSlotNumber,
+  getSlotTime: getSlotTime,
+  getNextSlot: getNextSlot,
+  getLastSlot: getLastSlot,
+  beginEpochTime: beginEpochTime
 }
 
 },{}],11:[function(require,module,exports){
@@ -405,7 +405,7 @@ var sha256 = require("fast-sha256");
 var addressHelper = require('../address.js')
 
 if (typeof Buffer === "undefined") {
-	Buffer = require("buffer/").Buffer;
+  Buffer = require("buffer/").Buffer;
 }
 
 var ByteBuffer = require("bytebuffer");
@@ -415,15 +415,15 @@ var nacl = require('tweetnacl')
 var fixedPoint = Math.pow(10, 8);
 
 function getSignatureBytes(signature) {
-	var bb = new ByteBuffer(32, true);
-	var publicKeyBuffer = new Buffer(signature.publicKey, "hex");
+  var bb = new ByteBuffer(32, true);
+  var publicKeyBuffer = new Buffer(signature.publicKey, "hex");
 
-	for (var i = 0; i < publicKeyBuffer.length; i++) {
-		bb.writeByte(publicKeyBuffer[i]);
-	}
+  for (var i = 0; i < publicKeyBuffer.length; i++) {
+    bb.writeByte(publicKeyBuffer[i]);
+  }
 
-	bb.flip();
-	return new Uint8Array(bb.toArrayBuffer());
+  bb.flip();
+  return new Uint8Array(bb.toArrayBuffer());
 }
 
 function toLocalBuffer(buf) {
@@ -435,403 +435,403 @@ function toLocalBuffer(buf) {
 }
 
 function sha256Bytes(data) {
-	return Buffer.from(sha256.hash(data))
+  return Buffer.from(sha256.hash(data))
 }
 
 function sha256Hex(data) {
-	return Buffer.from(sha256.hash(data)).toString('hex')
+  return Buffer.from(sha256.hash(data)).toString('hex')
 }
 
 function getDAppBytes(dapp) {
-	try {
-		var buf = new Buffer([]);
-		var nameBuf = new Buffer(dapp.name, "utf8");
-		buf = Buffer.concat([buf, nameBuf]);
+  try {
+    var buf = new Buffer([]);
+    var nameBuf = new Buffer(dapp.name, "utf8");
+    buf = Buffer.concat([buf, nameBuf]);
 
-		if (dapp.description) {
-			var descriptionBuf = new Buffer(dapp.description, "utf8");
-			buf = Buffer.concat([buf, descriptionBuf]);
-		}
+    if (dapp.description) {
+      var descriptionBuf = new Buffer(dapp.description, "utf8");
+      buf = Buffer.concat([buf, descriptionBuf]);
+    }
 
-		if (dapp.tags) {
-			var tagsBuf = new Buffer(dapp.tags, "utf8");
-			buf = Buffer.concat([buf, tagsBuf]);
-		}
+    if (dapp.tags) {
+      var tagsBuf = new Buffer(dapp.tags, "utf8");
+      buf = Buffer.concat([buf, tagsBuf]);
+    }
 
-		if (dapp.link) {
-			buf = Buffer.concat([buf, new Buffer(dapp.link, "utf8")]);
-		}
+    if (dapp.link) {
+      buf = Buffer.concat([buf, new Buffer(dapp.link, "utf8")]);
+    }
 
-		if (dapp.icon) {
-			buf = Buffer.concat([buf, new Buffer(dapp.icon, "utf8")]);
-		}
+    if (dapp.icon) {
+      buf = Buffer.concat([buf, new Buffer(dapp.icon, "utf8")]);
+    }
 
-		var bb = new ByteBuffer(1, true);
-		bb.writeInt(dapp.type);
-		bb.writeInt(dapp.category);
-		bb.writeString(dapp.delegates.join(','));
-		bb.writeInt(dapp.unlockDelegates);
-		bb.flip();
+    var bb = new ByteBuffer(1, true);
+    bb.writeInt(dapp.type);
+    bb.writeInt(dapp.category);
+    bb.writeString(dapp.delegates.join(','));
+    bb.writeInt(dapp.unlockDelegates);
+    bb.flip();
 
-		buf = Buffer.concat([buf, bb.toBuffer()]);
-	} catch (e) {
-		throw Error(e.toString());
-	}
+    buf = Buffer.concat([buf, bb.toBuffer()]);
+  } catch (e) {
+    throw Error(e.toString());
+  }
 
-	return buf;
+  return buf;
 }
 
 function getInTransferBytes(inTransfer) {
-	try {
-		var buf = new Buffer([]);
-		var dappId = new Buffer(inTransfer.dappId, "utf8");
-		var currency = new Buffer(inTransfer.currency, "utf8")
-		buf = Buffer.concat([buf, dappId, currency]);
-		if (inTransfer.currency !== 'XAS') {
-			var amount = new Buffer(inTransfer.amount, "utf8")
-			buf = Buffer.concat([buf, amount])
-		}
-	} catch (e) {
-		throw Error(e.toString());
-	}
+  try {
+    var buf = new Buffer([]);
+    var dappId = new Buffer(inTransfer.dappId, "utf8");
+    var currency = new Buffer(inTransfer.currency, "utf8")
+    buf = Buffer.concat([buf, dappId, currency]);
+    if (inTransfer.currency !== 'XAS') {
+      var amount = new Buffer(inTransfer.amount, "utf8")
+      buf = Buffer.concat([buf, amount])
+    }
+  } catch (e) {
+    throw Error(e.toString());
+  }
 
-	return buf;
+  return buf;
 }
 
 function getOutTransferBytes(outTransfer) {
-	try {
-		var buf = new Buffer([]);
-		var dappIdBuf = new Buffer(outTransfer.dappId, 'utf8');
-		var transactionIdBuff = new Buffer(outTransfer.transactionId, 'utf8');
-		var currencyBuff = new Buffer(outTransfer.currency, 'utf8')
-		var amountBuff = new Buffer(outTransfer.amount, 'utf8')
-		buf = Buffer.concat([buf, dappIdBuf, transactionIdBuff, currencyBuff, amountBuff]);
-	} catch (e) {
-		throw Error(e.toString());
-	}
+  try {
+    var buf = new Buffer([]);
+    var dappIdBuf = new Buffer(outTransfer.dappId, 'utf8');
+    var transactionIdBuff = new Buffer(outTransfer.transactionId, 'utf8');
+    var currencyBuff = new Buffer(outTransfer.currency, 'utf8')
+    var amountBuff = new Buffer(outTransfer.amount, 'utf8')
+    buf = Buffer.concat([buf, dappIdBuf, transactionIdBuff, currencyBuff, amountBuff]);
+  } catch (e) {
+    throw Error(e.toString());
+  }
 
-	return buf;
+  return buf;
 }
 
 function getBytes(transaction, skipSignature, skipSecondSignature) {
-	var assetSize = 0,
-		assetBytes = null;
+  var assetSize = 0,
+    assetBytes = null;
 
-	switch (transaction.type) {
-		case 1: // Signature
-			assetBytes = getSignatureBytes(transaction.asset.signature);
-			break;
+  switch (transaction.type) {
+    case 1: // Signature
+      assetBytes = getSignatureBytes(transaction.asset.signature);
+      break;
 
-		case 2: // Delegate
-			assetBytes = new Buffer(transaction.asset.delegate.username, "utf8");
-			break;
+    case 2: // Delegate
+      assetBytes = new Buffer(transaction.asset.delegate.username, "utf8");
+      break;
 
-		case 3: // Vote
-			assetBytes = new Buffer(transaction.asset.vote.votes.join(""), "utf8");
-			break;
+    case 3: // Vote
+      assetBytes = new Buffer(transaction.asset.vote.votes.join(""), "utf8");
+      break;
 
-		case 4: // Multi-Signature
-			var keysgroupBuffer = new Buffer(transaction.asset.multisignature.keysgroup.join(""), "utf8");
-			var bb = new ByteBuffer(1 + 1 + keysgroupBuffer.length, true);
+    case 4: // Multi-Signature
+      var keysgroupBuffer = new Buffer(transaction.asset.multisignature.keysgroup.join(""), "utf8");
+      var bb = new ByteBuffer(1 + 1 + keysgroupBuffer.length, true);
 
-			bb.writeByte(transaction.asset.multisignature.min);
-			bb.writeByte(transaction.asset.multisignature.lifetime);
+      bb.writeByte(transaction.asset.multisignature.min);
+      bb.writeByte(transaction.asset.multisignature.lifetime);
 
-			for (var i = 0; i < keysgroupBuffer.length; i++) {
-				bb.writeByte(keysgroupBuffer[i]);
-			}
+      for (var i = 0; i < keysgroupBuffer.length; i++) {
+        bb.writeByte(keysgroupBuffer[i]);
+      }
 
-			bb.flip();
+      bb.flip();
 
-			assetBytes = bb.toBuffer();
-			break;
+      assetBytes = bb.toBuffer();
+      break;
 
-		case 5: // Dapp
-			assetBytes = getDAppBytes(transaction.asset.dapp);
-			break;
+    case 5: // Dapp
+      assetBytes = getDAppBytes(transaction.asset.dapp);
+      break;
 
-		case 6: // In Transfer (Dapp Deposit)
-			assetBytes = getInTransferBytes(transaction.asset.inTransfer);
-			break;
-		case 7:
-			assetBytes = getOutTransferBytes(transaction.asset.outTransfer)
-			break;
-		case 8:
-			assetBytes = toLocalBuffer(ByteBuffer.fromHex(transaction.asset.storage.content))
-			break;
-		case 9:
-			var bb = new ByteBuffer(1, true)
-			var asset = transaction.asset.uiaIssuer
-			bb.writeString(asset.name)
-			bb.writeString(asset.desc)
-			bb.flip()
-			assetBytes = toLocalBuffer(bb)
-			break;
-		case 10:
-			var bb = new ByteBuffer(1, true)
-			var asset = transaction.asset.uiaAsset
-			bb.writeString(asset.name)
-			bb.writeString(asset.desc)
-			bb.writeString(asset.maximum)
-			bb.writeByte(asset.precision)
-			if (typeof asset.strategy === 'string' && asset.strategy.length > 0) {
-				bb.writeString(asset.strategy)
-			}
-			bb.writeByte(asset.allowWriteoff)
-			bb.writeByte(asset.allowWhitelist)
-			bb.writeByte(asset.allowBlacklist)
-			bb.flip()
-			assetBytes = toLocalBuffer(bb)
-			break;
-		case 11:
-			var bb = new ByteBuffer(1, true)
-			var asset = transaction.asset.uiaFlags
-			bb.writeString(asset.currency)
-			bb.writeByte(asset.flagType)
-			bb.writeByte(asset.flag)
-			bb.flip()
-			assetBytes = toLocalBuffer(bb)
-			break;
-		case 12:
-			var bb = new ByteBuffer(1, true)
-			var asset = transaction.asset.uiaAcl
-			bb.writeString(asset.currency)
-			bb.writeString(asset.operator)
-			bb.writeByte(asset.flag)
-			for (var i = 0; i < asset.list.length; ++i) {
-				bb.writeString(asset.list[i])
-			}
-			bb.flip()
-			assetBytes = toLocalBuffer(bb)
-			break;
-		case 13:
-			var bb = new ByteBuffer(1, true)
-			var asset = transaction.asset.uiaIssue
-			bb.writeString(asset.currency)
-			bb.writeString(asset.amount)
-			bb.flip()
-			assetBytes = toLocalBuffer(bb)
-			break;
-		case 14:
-			var bb = new ByteBuffer(1, true)
-			var asset = transaction.asset.uiaTransfer
-			bb.writeString(asset.currency)
-			bb.writeString(asset.amount)
-			bb.flip()
-			assetBytes = toLocalBuffer(bb)
-			break;
-	}
-	if (transaction.__assetBytes__) {
-		assetBytes = transaction.__assetBytes__;
-	}
-	if (assetBytes) assetSize = assetBytes.length
+    case 6: // In Transfer (Dapp Deposit)
+      assetBytes = getInTransferBytes(transaction.asset.inTransfer);
+      break;
+    case 7:
+      assetBytes = getOutTransferBytes(transaction.asset.outTransfer)
+      break;
+    case 8:
+      assetBytes = toLocalBuffer(ByteBuffer.fromHex(transaction.asset.storage.content))
+      break;
+    case 9:
+      var bb = new ByteBuffer(1, true)
+      var asset = transaction.asset.uiaIssuer
+      bb.writeString(asset.name)
+      bb.writeString(asset.desc)
+      bb.flip()
+      assetBytes = toLocalBuffer(bb)
+      break;
+    case 10:
+      var bb = new ByteBuffer(1, true)
+      var asset = transaction.asset.uiaAsset
+      bb.writeString(asset.name)
+      bb.writeString(asset.desc)
+      bb.writeString(asset.maximum)
+      bb.writeByte(asset.precision)
+      if (typeof asset.strategy === 'string' && asset.strategy.length > 0) {
+        bb.writeString(asset.strategy)
+      }
+      bb.writeByte(asset.allowWriteoff)
+      bb.writeByte(asset.allowWhitelist)
+      bb.writeByte(asset.allowBlacklist)
+      bb.flip()
+      assetBytes = toLocalBuffer(bb)
+      break;
+    case 11:
+      var bb = new ByteBuffer(1, true)
+      var asset = transaction.asset.uiaFlags
+      bb.writeString(asset.currency)
+      bb.writeByte(asset.flagType)
+      bb.writeByte(asset.flag)
+      bb.flip()
+      assetBytes = toLocalBuffer(bb)
+      break;
+    case 12:
+      var bb = new ByteBuffer(1, true)
+      var asset = transaction.asset.uiaAcl
+      bb.writeString(asset.currency)
+      bb.writeString(asset.operator)
+      bb.writeByte(asset.flag)
+      for (var i = 0; i < asset.list.length; ++i) {
+        bb.writeString(asset.list[i])
+      }
+      bb.flip()
+      assetBytes = toLocalBuffer(bb)
+      break;
+    case 13:
+      var bb = new ByteBuffer(1, true)
+      var asset = transaction.asset.uiaIssue
+      bb.writeString(asset.currency)
+      bb.writeString(asset.amount)
+      bb.flip()
+      assetBytes = toLocalBuffer(bb)
+      break;
+    case 14:
+      var bb = new ByteBuffer(1, true)
+      var asset = transaction.asset.uiaTransfer
+      bb.writeString(asset.currency)
+      bb.writeString(asset.amount)
+      bb.flip()
+      assetBytes = toLocalBuffer(bb)
+      break;
+  }
+  if (transaction.__assetBytes__) {
+    assetBytes = transaction.__assetBytes__;
+  }
+  if (assetBytes) assetSize = assetBytes.length
 
-	if (transaction.requesterPublicKey) {
-		assetSize += 32;
-	}
+  if (transaction.requesterPublicKey) {
+    assetSize += 32;
+  }
 
-	var bb = new ByteBuffer(1, true);
-	bb.writeByte(transaction.type);
-	bb.writeInt(transaction.timestamp);
+  var bb = new ByteBuffer(1, true);
+  bb.writeByte(transaction.type);
+  bb.writeInt(transaction.timestamp);
 
-	var senderPublicKeyBuffer = new Buffer(transaction.senderPublicKey, "hex");
-	for (var i = 0; i < senderPublicKeyBuffer.length; i++) {
-		bb.writeByte(senderPublicKeyBuffer[i]);
-	}
+  var senderPublicKeyBuffer = new Buffer(transaction.senderPublicKey, "hex");
+  for (var i = 0; i < senderPublicKeyBuffer.length; i++) {
+    bb.writeByte(senderPublicKeyBuffer[i]);
+  }
 
-	if (transaction.requesterPublicKey) {
-		var requesterPublicKey = new Buffer(transaction.requesterPublicKey, "hex");
+  if (transaction.requesterPublicKey) {
+    var requesterPublicKey = new Buffer(transaction.requesterPublicKey, "hex");
 
-		for (var i = 0; i < requesterPublicKey.length; i++) {
-			bb.writeByte(requesterPublicKey[i]);
-		}
-	}
+    for (var i = 0; i < requesterPublicKey.length; i++) {
+      bb.writeByte(requesterPublicKey[i]);
+    }
+  }
 
-	if (transaction.recipientId) {
-		if (/^[0-9]{1,20}$/g.test(transaction.recipientId)) {
-			var recipient = bignum(transaction.recipientId).toBuffer({ size: 8 });
-			for (var i = 0; i < 8; i++) {
-				bb.writeByte(recipient[i] || 0);
-			}
-		} else {
-			bb.writeString(transaction.recipientId);
-		}
-	} else {
-		for (var i = 0; i < 8; i++) {
-			bb.writeByte(0);
-		}
-	}
+  if (transaction.recipientId) {
+    if (/^[0-9]{1,20}$/g.test(transaction.recipientId)) {
+      var recipient = bignum(transaction.recipientId).toBuffer({ size: 8 });
+      for (var i = 0; i < 8; i++) {
+        bb.writeByte(recipient[i] || 0);
+      }
+    } else {
+      bb.writeString(transaction.recipientId);
+    }
+  } else {
+    for (var i = 0; i < 8; i++) {
+      bb.writeByte(0);
+    }
+  }
 
-	bb.writeLong(transaction.amount);
+  bb.writeLong(transaction.amount);
 
-	if (transaction.message) bb.writeString(transaction.message)
-	if (transaction.args) {
-		var args = transaction.args
-		for (var i = 0; i < args.length; ++i) {
-			bb.writeString(args[i])
-		}
-	}
+  if (transaction.message) bb.writeString(transaction.message)
+  if (transaction.args) {
+    var args = transaction.args
+    for (var i = 0; i < args.length; ++i) {
+      bb.writeString(args[i])
+    }
+  }
 
-	if (assetSize > 0) {
-		for (var i = 0; i < assetSize; i++) {
-			bb.writeByte(assetBytes[i]);
-		}
-	}
+  if (assetSize > 0) {
+    for (var i = 0; i < assetSize; i++) {
+      bb.writeByte(assetBytes[i]);
+    }
+  }
 
-	if (!skipSignature && transaction.signature) {
-		var signatureBuffer = new Buffer(transaction.signature, "hex");
-		for (var i = 0; i < signatureBuffer.length; i++) {
-			bb.writeByte(signatureBuffer[i]);
-		}
-	}
+  if (!skipSignature && transaction.signature) {
+    var signatureBuffer = new Buffer(transaction.signature, "hex");
+    for (var i = 0; i < signatureBuffer.length; i++) {
+      bb.writeByte(signatureBuffer[i]);
+    }
+  }
 
-	if (!skipSecondSignature && transaction.signSignature) {
-		var signSignatureBuffer = new Buffer(transaction.signSignature, "hex");
-		for (var i = 0; i < signSignatureBuffer.length; i++) {
-			bb.writeByte(signSignatureBuffer[i]);
-		}
-	}
+  if (!skipSecondSignature && transaction.signSignature) {
+    var signSignatureBuffer = new Buffer(transaction.signSignature, "hex");
+    for (var i = 0; i < signSignatureBuffer.length; i++) {
+      bb.writeByte(signSignatureBuffer[i]);
+    }
+  }
 
-	bb.flip();
-	var arrayBuffer = new Uint8Array(bb.toArrayBuffer());
-	var buffer = [];
+  bb.flip();
+  var arrayBuffer = new Uint8Array(bb.toArrayBuffer());
+  var buffer = [];
 
-	for (var i = 0; i < arrayBuffer.length; i++) {
-		buffer[i] = arrayBuffer[i];
-	}
+  for (var i = 0; i < arrayBuffer.length; i++) {
+    buffer[i] = arrayBuffer[i];
+  }
 
-	return new Buffer(buffer);
+  return new Buffer(buffer);
 }
 
 function getId(transaction) {
-	return sha256Hex(getBytes(transaction))
+  return sha256Hex(getBytes(transaction))
 }
 function getHash(transaction, skipSignature, skipSecondSignature) {
-	return sha256Bytes(getBytes(transaction, skipSignature, skipSecondSignature))
+  return sha256Bytes(getBytes(transaction, skipSignature, skipSecondSignature))
 }
 
 function getFee(transaction) {
-	switch (transaction.type) {
-		case 0: // Normal
-			return 0.1 * fixedPoint;
-			break;
+  switch (transaction.type) {
+    case 0: // Normal
+      return 0.1 * fixedPoint;
+      break;
 
-		case 1: // Signature
-			return 100 * fixedPoint;
-			break;
+    case 1: // Signature
+      return 100 * fixedPoint;
+      break;
 
-		case 2: // Delegate
-			return 10000 * fixedPoint;
-			break;
+    case 2: // Delegate
+      return 10000 * fixedPoint;
+      break;
 
-		case 3: // Vote
-			return 1 * fixedPoint;
-			break;
-	}
+    case 3: // Vote
+      return 1 * fixedPoint;
+      break;
+  }
 }
 
 function sign(transaction, keys) {
-	var hash = getHash(transaction, true, true);
-	var signature = nacl.sign.detached(hash, new Buffer(keys.privateKey, "hex"));
+  var hash = getHash(transaction, true, true);
+  var signature = nacl.sign.detached(hash, new Buffer(keys.privateKey, "hex"));
 
-	if (!transaction.signature) {
-		transaction.signature = new Buffer(signature).toString("hex");
-	} else {
-		return new Buffer(signature).toString("hex");
-	}
+  if (!transaction.signature) {
+    transaction.signature = new Buffer(signature).toString("hex");
+  } else {
+    return new Buffer(signature).toString("hex");
+  }
 }
 
 function secondSign(transaction, keys) {
-	var hash = getHash(transaction);
-	var signature = nacl.sign.detached(hash, new Buffer(keys.privateKey, "hex"));
-	transaction.signSignature = new Buffer(signature).toString("hex")
+  var hash = getHash(transaction);
+  var signature = nacl.sign.detached(hash, new Buffer(keys.privateKey, "hex"));
+  transaction.signSignature = new Buffer(signature).toString("hex")
 }
 
 function signBytes(bytes, keys) {
-	var hash = sha256Bytes(new Buffer(bytes, 'hex'))
-	var signature = nacl.sign.detached(hash, new Buffer(keys.privateKey, "hex"));
-	return new Buffer(signature).toString("hex");
+  var hash = sha256Bytes(new Buffer(bytes, 'hex'))
+  var signature = nacl.sign.detached(hash, new Buffer(keys.privateKey, "hex"));
+  return new Buffer(signature).toString("hex");
 }
 
 function verify(transaction) {
-	var remove = 64;
+  var remove = 64;
 
-	if (transaction.signSignature) {
-		remove = 128;
-	}
+  if (transaction.signSignature) {
+    remove = 128;
+  }
 
-	var bytes = getBytes(transaction);
-	var data2 = new Buffer(bytes.length - remove);
+  var bytes = getBytes(transaction);
+  var data2 = new Buffer(bytes.length - remove);
 
-	for (var i = 0; i < data2.length; i++) {
-		data2[i] = bytes[i];
-	}
+  for (var i = 0; i < data2.length; i++) {
+    data2[i] = bytes[i];
+  }
 
-	var hash = sha256Bytes(data2)
+  var hash = sha256Bytes(data2)
 
-	var signatureBuffer = new Buffer(transaction.signature, "hex");
-	var senderPublicKeyBuffer = new Buffer(transaction.senderPublicKey, "hex");
-	var res = nacl.sign.detached.verify(hash, signatureBuffer, senderPublicKeyBuffer);
+  var signatureBuffer = new Buffer(transaction.signature, "hex");
+  var senderPublicKeyBuffer = new Buffer(transaction.senderPublicKey, "hex");
+  var res = nacl.sign.detached.verify(hash, signatureBuffer, senderPublicKeyBuffer);
 
-	return res;
+  return res;
 }
 
 function verifySecondSignature(transaction, publicKey) {
-	var bytes = getBytes(transaction);
-	var data2 = new Buffer(bytes.length - 64);
+  var bytes = getBytes(transaction);
+  var data2 = new Buffer(bytes.length - 64);
 
-	for (var i = 0; i < data2.length; i++) {
-		data2[i] = bytes[i];
-	}
+  for (var i = 0; i < data2.length; i++) {
+    data2[i] = bytes[i];
+  }
 
-	var hash = sha256Bytes(data2)
+  var hash = sha256Bytes(data2)
 
-	var signSignatureBuffer = new Buffer(transaction.signSignature, "hex");
-	var publicKeyBuffer = new Buffer(publicKey, "hex");
-	var res = nacl.sign.detached.verify(hash, signSignatureBuffer, publicKeyBuffer);
+  var signSignatureBuffer = new Buffer(transaction.signSignature, "hex");
+  var publicKeyBuffer = new Buffer(publicKey, "hex");
+  var res = nacl.sign.detached.verify(hash, signSignatureBuffer, publicKeyBuffer);
 
-	return res;
+  return res;
 }
 
 function verifyBytes(bytes, signature, publicKey) {
-	var hash = sha256Bytes(new Buffer(bytes, 'hex'))
-	var signatureBuffer = new Buffer(signature, "hex");
-	var publicKeyBuffer = new Buffer(publicKey, "hex");
-	var res = nacl.sign.detached.verify(hash, signatureBuffer, publicKeyBuffer);
-	return res
+  var hash = sha256Bytes(new Buffer(bytes, 'hex'))
+  var signatureBuffer = new Buffer(signature, "hex");
+  var publicKeyBuffer = new Buffer(publicKey, "hex");
+  var res = nacl.sign.detached.verify(hash, signatureBuffer, publicKeyBuffer);
+  return res
 }
 
 function getKeys(secret) {
-	var hash = sha256Bytes(new Buffer(secret))
-	var keypair = nacl.sign.keyPair.fromSeed(hash);
+  var hash = sha256Bytes(new Buffer(secret))
+  var keypair = nacl.sign.keyPair.fromSeed(hash);
 
-	return {
-		publicKey: new Buffer(keypair.publicKey).toString("hex"),
-		privateKey: new Buffer(keypair.secretKey).toString("hex")
-	}
+  return {
+    publicKey: new Buffer(keypair.publicKey).toString("hex"),
+    privateKey: new Buffer(keypair.secretKey).toString("hex")
+  }
 }
 
 function getAddress(publicKey) {
-	return addressHelper.generateBase58CheckAddress(publicKey)
+  return addressHelper.generateBase58CheckAddress(publicKey)
 }
 
 module.exports = {
-	getBytes: getBytes,
-	getHash: getHash,
-	getId: getId,
-	getFee: getFee,
-	sign: sign,
-	secondSign: secondSign,
-	getKeys: getKeys,
-	getAddress: getAddress,
-	verify: verify,
-	verifySecondSignature: verifySecondSignature,
-	fixedPoint: fixedPoint,
-	signBytes: signBytes,
-	toLocalBuffer: toLocalBuffer,
-	verifyBytes: verifyBytes,
-	isAddress: addressHelper.isAddress,
-	isBase58CheckAddress: addressHelper.isBase58CheckAddress
+  getBytes: getBytes,
+  getHash: getHash,
+  getId: getId,
+  getFee: getFee,
+  sign: sign,
+  secondSign: secondSign,
+  getKeys: getKeys,
+  getAddress: getAddress,
+  verify: verify,
+  verifySecondSignature: verifySecondSignature,
+  fixedPoint: fixedPoint,
+  signBytes: signBytes,
+  toLocalBuffer: toLocalBuffer,
+  verifyBytes: verifyBytes,
+  isAddress: addressHelper.isAddress,
+  isBase58CheckAddress: addressHelper.isBase58CheckAddress
 }
 
 }).call(this,require("buffer").Buffer)
@@ -844,83 +844,83 @@ var slots = require("../time/slots.js")
 var globalOptions = require('../options.js')
 
 function createDApp(options, secret, secondSecret) {
-	var keys = crypto.getKeys(secret);
+  var keys = crypto.getKeys(secret);
 
-	var transaction = {
-		type: 5,
-		amount: 0,
-		fee: constants.fees.dapp,
-		recipientId: null,
-		senderPublicKey: keys.publicKey,
-		timestamp: slots.getTime() - globalOptions.get('clientDriftSeconds'),
-		asset: {
-			dapp: {
-				category: options.category,
-				name: options.name,
-				description: options.description,
-				tags: options.tags,
-				type: options.type,
-				link: options.link,
-				icon: options.icon,
-				delegates: options.delegates,
-				unlockDelegates: options.unlockDelegates
-			}
-		}
-	};
+  var transaction = {
+    type: 5,
+    amount: 0,
+    fee: constants.fees.dapp,
+    recipientId: null,
+    senderPublicKey: keys.publicKey,
+    timestamp: slots.getTime() - globalOptions.get('clientDriftSeconds'),
+    asset: {
+      dapp: {
+        category: options.category,
+        name: options.name,
+        description: options.description,
+        tags: options.tags,
+        type: options.type,
+        link: options.link,
+        icon: options.icon,
+        delegates: options.delegates,
+        unlockDelegates: options.unlockDelegates
+      }
+    }
+  };
 
-	crypto.sign(transaction, keys);
+  crypto.sign(transaction, keys);
 
-	if (secondSecret) {
-		var secondKeys = crypto.getKeys(secondSecret);
-		crypto.secondSign(transaction, secondKeys);
-	}
+  if (secondSecret) {
+    var secondKeys = crypto.getKeys(secondSecret);
+    crypto.secondSign(transaction, secondKeys);
+  }
 
-	transaction.id = crypto.getId(transaction);
-	return transaction;
+  transaction.id = crypto.getId(transaction);
+  return transaction;
 }
 
 function getDAppTransactionBytes(trs, skipSignature) {
-	var bb = new ByteBuffer(1, true);
-	bb.writeInt(trs.timestamp);
-	bb.writeString(trs.fee)
+  var bb = new ByteBuffer(1, true);
+  bb.writeInt(trs.timestamp);
+  bb.writeString(trs.fee)
 
-	var senderPublicKeyBuffer = new Buffer(trs.senderPublicKey, 'hex');
-	for (var i = 0; i < senderPublicKeyBuffer.length; i++) {
-		bb.writeByte(senderPublicKeyBuffer[i]);
-	}
+  var senderPublicKeyBuffer = new Buffer(trs.senderPublicKey, 'hex');
+  for (var i = 0; i < senderPublicKeyBuffer.length; i++) {
+    bb.writeByte(senderPublicKeyBuffer[i]);
+  }
 
-	bb.writeInt(trs.type)
+  bb.writeInt(trs.type)
 
-	if (trs.args) bb.writeString(trs.args)
+  if (trs.args) bb.writeString(trs.args)
 
-	if (!skipSignature && trs.signature) {
-		var signatureBuffer = new Buffer(trs.signature, 'hex');
-		for (var i = 0; i < signatureBuffer.length; i++) {
-			bb.writeByte(signatureBuffer[i]);
-		}
-	}
-	bb.flip();
-	return bb.toBuffer()
+  if (!skipSignature && trs.signature) {
+    var signatureBuffer = new Buffer(trs.signature, 'hex');
+    for (var i = 0; i < signatureBuffer.length; i++) {
+      bb.writeByte(signatureBuffer[i]);
+    }
+  }
+  bb.flip();
+  return bb.toBuffer()
 }
 
 function createInnerTransaction(options, secret) {
-	var keys = crypto.getKeys(secret)
-	var args = options.args
-	if (args instanceof Array) args = JSON.stringify(args)
-	var trs = {
-		fee: options.fee,
-		timestamp: slots.getTime() - globalOptions.get('clientDriftSeconds'),
-		senderPublicKey: keys.publicKey,
-		type: options.type,
-		args: args
-	}
-	trs.signature = crypto.signBytes(getDAppTransactionBytes(trs), keys)
-	return trs
+  var keys = crypto.getKeys(secret)
+  var args = options.args
+  if (args instanceof Array) args = JSON.stringify(args)
+  var trs = {
+    fee: options.fee,
+    timestamp: slots.getTime() - globalOptions.get('clientDriftSeconds'),
+    senderPublicKey: keys.publicKey,
+    type: options.type,
+    args: args
+  }
+  trs.signature = crypto.signBytes(getDAppTransactionBytes(trs), keys)
+  return trs
 }
 
 module.exports = {
-	createDApp: createDApp,
-	createInnerTransaction: createInnerTransaction
+  createDApp: createDApp,
+  createInnerTransaction: createInnerTransaction
 }
 
 }).call(this,require("buffer").Buffer)
@@ -931,36 +931,36 @@ var slots = require("../time/slots.js")
 var options = require('../options')
 
 function createDelegate(username, secret, secondSecret) {
-	var keys = crypto.getKeys(secret);
+  var keys = crypto.getKeys(secret);
 
-	var transaction = {
-		type: 2,
-		amount: 0,
-		fee: constants.fees.delegate,
-		recipientId: null,
-		senderPublicKey: keys.publicKey,
-		timestamp: slots.getTime() - options.get('clientDriftSeconds'),
-		asset: {
-			delegate: {
-				username: username,
-				publicKey: keys.publicKey
-			}
-		}
-	};
+  var transaction = {
+    type: 2,
+    amount: 0,
+    fee: constants.fees.delegate,
+    recipientId: null,
+    senderPublicKey: keys.publicKey,
+    timestamp: slots.getTime() - options.get('clientDriftSeconds'),
+    asset: {
+      delegate: {
+        username: username,
+        publicKey: keys.publicKey
+      }
+    }
+  };
 
-	crypto.sign(transaction, keys);
+  crypto.sign(transaction, keys);
 
-	if (secondSecret) {
-		var secondKeys = crypto.getKeys(secondSecret);
-		crypto.secondSign(transaction, secondKeys);
-	}
+  if (secondSecret) {
+    var secondKeys = crypto.getKeys(secondSecret);
+    crypto.secondSign(transaction, secondKeys);
+  }
 
-	transaction.id = crypto.getId(transaction);
-	return transaction;
+  transaction.id = crypto.getId(transaction);
+  return transaction;
 }
 
 module.exports = {
-	createDelegate : createDelegate
+  createDelegate : createDelegate
 }
 
 },{"../constants.js":7,"../options":8,"../time/slots.js":10,"./crypto.js":11}],14:[function(require,module,exports){
@@ -970,39 +970,39 @@ var slots = require("../time/slots.js")
 var options = require('../options')
 
 function newSignature(secondSecret) {
-	var keys = crypto.getKeys(secondSecret);
+  var keys = crypto.getKeys(secondSecret);
 
-	var signature = {
-		publicKey: keys.publicKey
-	};
+  var signature = {
+    publicKey: keys.publicKey
+  };
 
-	return signature;
+  return signature;
 }
 
 function createSignature(secret, secondSecret) {
-	var keys = crypto.getKeys(secret);
+  var keys = crypto.getKeys(secret);
 
-	var signature = newSignature(secondSecret);
-	var transaction = {
-		type: 1,
-		amount: 0,
-		fee: constants.fees.secondsignature,
-		recipientId: null,
-		senderPublicKey: keys.publicKey,
-		timestamp: slots.getTime() - options.get('clientDriftSeconds'),
-		asset: {
-			signature: signature
-		}
-	};
+  var signature = newSignature(secondSecret);
+  var transaction = {
+    type: 1,
+    amount: 0,
+    fee: constants.fees.secondsignature,
+    recipientId: null,
+    senderPublicKey: keys.publicKey,
+    timestamp: slots.getTime() - options.get('clientDriftSeconds'),
+    asset: {
+      signature: signature
+    }
+  };
 
-	crypto.sign(transaction, keys);
-	transaction.id = crypto.getId(transaction);
+  crypto.sign(transaction, keys);
+  transaction.id = crypto.getId(transaction);
 
-	return transaction;
+  return transaction;
 }
 
 module.exports = {
-	createSignature: createSignature
+  createSignature: createSignature
 }
 
 },{"../constants.js":7,"../options":8,"../time/slots.js":10,"./crypto.js":11}],15:[function(require,module,exports){
@@ -1013,7 +1013,7 @@ var slots = require("../time/slots.js")
 var options = require('../options')
 
 function createStorage(content, secret, secondSecret) {
-	var keys = crypto.getKeys(secret)
+  var keys = crypto.getKeys(secret)
   var bytes =  null
   try {
     bytes = crypto.toLocalBuffer(ByteBuffer.fromHex(content))
@@ -1023,36 +1023,36 @@ function createStorage(content, secret, secondSecret) {
   if (!bytes || bytes.length == 0) {
     throw new Error('Invalid content format')
   }
-  var fee = (Math.floor(bytes.length / 200) + 1) * 0.1 * constants.coin
+  var fee = Math.round((Math.floor(bytes.length / 200) + 1) * 0.1 * constants.coin);
   
-	var transaction = {
-		type: 8,
-		amount: 0,
-		fee: fee,
-		recipientId: null,
-		senderPublicKey: keys.publicKey,
-		timestamp: slots.getTime() - options.get('clientDriftSeconds'),
-		asset: {
-			storage: {
-				content: content
-			}
-		},
+  var transaction = {
+    type: 8,
+    amount: 0,
+    fee: fee,
+    recipientId: null,
+    senderPublicKey: keys.publicKey,
+    timestamp: slots.getTime() - options.get('clientDriftSeconds'),
+    asset: {
+      storage: {
+        content: content
+      }
+    },
     __assetBytes__: bytes
-	}
+  }
 
-	crypto.sign(transaction, keys)
+  crypto.sign(transaction, keys)
 
-	if (secondSecret) {
-		var secondKeys = crypto.getKeys(secondSecret)
-		crypto.secondSign(transaction, secondKeys)
-	}
+  if (secondSecret) {
+    var secondKeys = crypto.getKeys(secondSecret)
+    crypto.secondSign(transaction, secondKeys)
+  }
   delete transaction.__assetBytes__
-	transaction.id = crypto.getId(transaction)
-	return transaction
+  transaction.id = crypto.getId(transaction)
+  return transaction
 }
 
 module.exports = {
-	createStorage : createStorage
+  createStorage : createStorage
 }
 
 },{"../constants.js":7,"../options":8,"../time/slots.js":10,"./crypto.js":11,"bytebuffer":24}],16:[function(require,module,exports){
@@ -1068,59 +1068,59 @@ function calculateFee(amount) {
 }
 
 function createTransaction(recipientId, amount, message, secret, secondSecret) {
-	var transaction = {
-		type: 0,
-		amount: amount,
-		fee: constants.fees.send,
-		recipientId: recipientId,
-		message: message,
-		timestamp: slots.getTime() - options.get('clientDriftSeconds'),
-		asset: {}
-	};
+  var transaction = {
+    type: 0,
+    amount: amount,
+    fee: constants.fees.send,
+    recipientId: recipientId,
+    message: message,
+    timestamp: slots.getTime() - options.get('clientDriftSeconds'),
+    asset: {}
+  };
 
-	var keys = crypto.getKeys(secret);
-	transaction.senderPublicKey = keys.publicKey;
+  var keys = crypto.getKeys(secret);
+  transaction.senderPublicKey = keys.publicKey;
 
-	crypto.sign(transaction, keys);
+  crypto.sign(transaction, keys);
 
-	if (secondSecret) {
-		var secondKeys = crypto.getKeys(secondSecret);
-		crypto.secondSign(transaction, secondKeys);
-	}
+  if (secondSecret) {
+    var secondKeys = crypto.getKeys(secondSecret);
+    crypto.secondSign(transaction, secondKeys);
+  }
 
-	transaction.id = crypto.getId(transaction);
-	return transaction;
+  transaction.id = crypto.getId(transaction);
+  return transaction;
 }
 
 function createLock(height, secret, secondSecret) {
-	var transaction = {
-		type: 100,
-		amount: 0,
-		fee: 10000000,
-		recipientId: null,
-		args: [ String(height) ],
-		timestamp: slots.getTime() - options.get('clientDriftSeconds'),
-		asset: {}
-	};
+  var transaction = {
+    type: 100,
+    amount: 0,
+    fee: 10000000,
+    recipientId: null,
+    args: [ String(height) ],
+    timestamp: slots.getTime() - options.get('clientDriftSeconds'),
+    asset: {}
+  };
 
-	var keys = crypto.getKeys(secret);
-	transaction.senderPublicKey = keys.publicKey;
+  var keys = crypto.getKeys(secret);
+  transaction.senderPublicKey = keys.publicKey;
 
-	crypto.sign(transaction, keys);
+  crypto.sign(transaction, keys);
 
-	if (secondSecret) {
-		var secondKeys = crypto.getKeys(secondSecret);
-		crypto.secondSign(transaction, secondKeys);
-	}
+  if (secondSecret) {
+    var secondKeys = crypto.getKeys(secondSecret);
+    crypto.secondSign(transaction, secondKeys);
+  }
 
-	transaction.id = crypto.getId(transaction);
-	return transaction;
+  transaction.id = crypto.getId(transaction);
+  return transaction;
 }
 
 module.exports = {
-	createTransaction: createTransaction,
-	calculateFee: calculateFee,
-	createLock: createLock
+  createTransaction: createTransaction,
+  calculateFee: calculateFee,
+  createLock: createLock
 }
 },{"../constants.js":7,"../options":8,"../time/slots.js":10,"./crypto.js":11}],17:[function(require,module,exports){
 var crypto = require("./crypto.js")
@@ -1129,82 +1129,82 @@ var slots = require("../time/slots.js")
 var options = require('../options')
 
 function createInTransfer(dappId, currency, amount, secret, secondSecret) {
-	var keys = crypto.getKeys(secret);
+  var keys = crypto.getKeys(secret);
 
-	var transaction = {
-		type: 6,
-		amount: 0,
-		fee: constants.fees.send,
-		recipientId: null,
-		senderPublicKey: keys.publicKey,
-		timestamp: slots.getTime() - options.get('clientDriftSeconds'),
-		asset: {
-			inTransfer: {
-				dappId: dappId,
-				currency: currency
-			}
-		}
-	};
+  var transaction = {
+    type: 6,
+    amount: 0,
+    fee: constants.fees.send,
+    recipientId: null,
+    senderPublicKey: keys.publicKey,
+    timestamp: slots.getTime() - options.get('clientDriftSeconds'),
+    asset: {
+      inTransfer: {
+        dappId: dappId,
+        currency: currency
+      }
+    }
+  };
 
-	if (currency === 'XAS') {
-		transaction.amount = Number(amount)
-	} else {
-		transaction.asset.inTransfer.amount = String(amount)
-	}
+  if (currency === 'XAS') {
+    transaction.amount = Number(amount)
+  } else {
+    transaction.asset.inTransfer.amount = String(amount)
+  }
 
-	crypto.sign(transaction, keys);
+  crypto.sign(transaction, keys);
 
-	if (secondSecret) {
-		var secondKeys = crypto.getKeys(secondSecret);
-		crypto.secondSign(transaction, secondKeys);
-	}
+  if (secondSecret) {
+    var secondKeys = crypto.getKeys(secondSecret);
+    crypto.secondSign(transaction, secondKeys);
+  }
 
-	transaction.id = crypto.getId(transaction);
-	return transaction;
+  transaction.id = crypto.getId(transaction);
+  return transaction;
 }
 
 function createOutTransfer(recipientId, dappId, transactionId, currency, amount, secret, secondSecret) {
-	var keys = crypto.getKeys(secret);
+  var keys = crypto.getKeys(secret);
 
-	var transaction = {
-		type: 7,
-		amount: 0,
-		fee: constants.fees.send,
-		recipientId: recipientId,
-		senderPublicKey: keys.publicKey,
-		timestamp: slots.getTime() - options.get('clientDriftSeconds'),
-		asset: {
-			outTransfer: {
-				dappId: dappId,
-				transactionId: transactionId,
-				currency: currency,
-				amount: amount
-			}
-		}
-	};
+  var transaction = {
+    type: 7,
+    amount: 0,
+    fee: constants.fees.send,
+    recipientId: recipientId,
+    senderPublicKey: keys.publicKey,
+    timestamp: slots.getTime() - options.get('clientDriftSeconds'),
+    asset: {
+      outTransfer: {
+        dappId: dappId,
+        transactionId: transactionId,
+        currency: currency,
+        amount: amount
+      }
+    }
+  };
 
-	crypto.sign(transaction, keys);
+  crypto.sign(transaction, keys);
 
-	if (secondSecret) {
-		var secondKeys = crypto.getKeys(secondSecret);
-		crypto.secondSign(transaction, secondKeys);
-	}
+  if (secondSecret) {
+    var secondKeys = crypto.getKeys(secondSecret);
+    crypto.secondSign(transaction, secondKeys);
+  }
 
-	transaction.id = crypto.getId(transaction);
-	return transaction;
+  transaction.id = crypto.getId(transaction);
+  return transaction;
 }
 
 function signOutTransfer(transaction, secret) {
-	var keys = crypto.getKeys(secret);
-	var signature = crypto.sign(transaction, keys);
+  var keys = crypto.getKeys(secret);
+  var signature = crypto.sign(transaction, keys);
 
-	return signature;
+  return signature;
 }
 
 module.exports = {
-	createInTransfer: createInTransfer,
-	createOutTransfer: createOutTransfer,
-	signOutTransfer: signOutTransfer
+  createInTransfer: createInTransfer,
+  createOutTransfer: createOutTransfer,
+  signOutTransfer: signOutTransfer
 }
 },{"../constants.js":7,"../options":8,"../time/slots.js":10,"./crypto.js":11}],18:[function(require,module,exports){
 var ByteBuffer = require('bytebuffer')
@@ -1329,36 +1329,36 @@ var slots = require("../time/slots.js")
 var options = require('../options')
 
 function createVote(keyList, secret, secondSecret) {
-	var keys = crypto.getKeys(secret);
+  var keys = crypto.getKeys(secret);
 
-	var transaction = {
-		type: 3,
-		amount: 0,
-		fee: constants.fees.vote,
-		recipientId: null,
-		senderPublicKey: keys.publicKey,
-		timestamp: slots.getTime() - options.get('clientDriftSeconds'),
-		asset: {
-			vote: {
-				votes: keyList
-			}
-		}
-	};
+  var transaction = {
+    type: 3,
+    amount: 0,
+    fee: constants.fees.vote,
+    recipientId: null,
+    senderPublicKey: keys.publicKey,
+    timestamp: slots.getTime() - options.get('clientDriftSeconds'),
+    asset: {
+      vote: {
+        votes: keyList
+      }
+    }
+  };
 
-	crypto.sign(transaction, keys);
+  crypto.sign(transaction, keys);
 
-	if (secondSecret) {
-		var secondKeys = crypto.getKeys(secondSecret);
-		crypto.secondSign(transaction, secondKeys);
-	}
+  if (secondSecret) {
+    var secondKeys = crypto.getKeys(secondSecret);
+    crypto.secondSign(transaction, secondKeys);
+  }
 
-	transaction.id = crypto.getId(transaction);
+  transaction.id = crypto.getId(transaction);
 
-	return transaction;
+  return transaction;
 }
 
 module.exports = {
-	createVote: createVote
+  createVote: createVote
 }
 
 },{"../constants.js":7,"../options":8,"../time/slots.js":10,"./crypto.js":11}],20:[function(require,module,exports){

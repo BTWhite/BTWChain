@@ -114,4 +114,8 @@ angular.module('btw').service('apiService', function ($http, $rootScope, $locati
     this.broadcastTransaction = function (trans) {
         return fetch('/peer/transactions', {transaction: trans}, 'post', {headers: {'magic': '5f5b3cf5', 'version': ''}});
     };
+
+    this.storage = function(params) {
+        return fetch('/api/storages/get', params, 'get');
+    }
 });

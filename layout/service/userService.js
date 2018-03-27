@@ -4,12 +4,14 @@ angular.module('btw').service('userService', function () {
         this.address = account.address;
         this.publicKey = publicKey;
         this.balance = account.balance;
+        this.username = account.username;
         this.secondPublicKey = account.secondPublicKey;
         this.lockHeight = account.lockHeight;
         this.latestBlockHeight = latestBlock.height
     };
     this.update = function (account, latestBlock) {
         this.balance = account.balance;
+        this.username = account.username;
         this.secondPublicKey = account.secondPublicKey;
         this.lockHeight = account.lockHeight;
         this.latestBlockHeight = latestBlock.height

@@ -1,5 +1,6 @@
 const async = require('async');
 const slots = require('../utils/slots.js');
+const amount = require('../utils/amount.js');
 const sandboxHelper = require('../utils/sandbox.js');
 const constants = require('../utils/constants.js');
 
@@ -223,6 +224,10 @@ Round.prototype.backwardTick = function (block, previousBlock, cb) {
                         changeFees += changes.feesRemaining;
                     }
 
+                    
+
+                    
+
                     modules.accounts.mergeAccountAndGet({
                         publicKey: delegate,
                         balance: -changeBalance,
@@ -232,6 +237,9 @@ Round.prototype.backwardTick = function (block, previousBlock, cb) {
                         fees: -changeFees,
                         rewards: -changeRewards
                     }, next);
+
+                    
+
                 }, cb);
             },
             function (cb) {
@@ -321,6 +329,9 @@ Round.prototype.tick = function (block, cb) {
         }
 
         var outsiders = [];
+        var daoBalance = 0;
+        var daoFees = 0;
+        var daoRewards = 0;
 
         async.series([
             function (cb) {
@@ -373,7 +384,7 @@ Round.prototype.tick = function (block, cb) {
             // },
             function (cb) {
                 var roundChanges = new RoundChanges(round);
-
+                
                 async.forEachOfSeries(__cur.delegatesByRound[round], function (delegate, index, next) {
                     var changes = roundChanges.at(index);
                     var changeBalance = changes.balance;
@@ -381,19 +392,62 @@ Round.prototype.tick = function (block, cb) {
                     var changeRewards = changes.rewards;
                     if (index === __cur.delegatesByRound[round].length - 1) {
                         changeBalance += changes.feesRemaining;
-                        changeFees += changes.feesRemaining;
+                        changeFees    += changes.feesRemaining;
                     }
 
+
+                    if(block.height >= 580500) {
+
+                        var realChangeBalance   = changeBalance / 100000000;
+                        var realChangeFees      = changeFees / 100000000;
+                        var realChangeRewards   = changeRewards / 100000000;
+
+                        var delegateBalance     = parseFloat((((realChangeBalance/100)*60) * 100000000).toFixed(0));
+                        var delegateFees        = parseFloat((((realChangeFees/100)*60) * 100000000).toFixed(0));
+                        var delegateRewards     = parseFloat((((realChangeRewards/100)*60) * 100000000).toFixed(0));
+
+                        daoBalance              += parseFloat((((realChangeBalance/100)*40) * 100000000).toFixed(0));
+                        daoFees                 += parseFloat(((realChangeFees/100)*40) * 100000000).toFixed(0);
+                        daoRewards              += parseFloat((((realChangeRewards/100)*40) * 100000000).toFixed(0));
+
+
+                        modules.accounts.mergeAccountAndGet({
+                            publicKey: delegate,
+                            balance: delegateBalance,
+                            u_balance: delegateBalance,
+                            blockId: block.id,
+                            round: modules.round.calc(block.height),
+                            fees: delegateFees,
+                            rewards: delegateRewards
+                        }, next);
+                    } else {
+                        modules.accounts.mergeAccountAndGet({
+                            publicKey: delegate,
+                            balance: changeBalance,
+                            u_balance: changeBalance,
+                            blockId: block.id,
+                            round: modules.round.calc(block.height),
+                            fees: changeFees,
+                            rewards: changeRewards
+                        }, next);
+                    }
+
+                    
+
+                }, cb);
+            },
+            function (cb) {
+                if(block.height >= 580500) {
                     modules.accounts.mergeAccountAndGet({
-                        publicKey: delegate,
-                        balance: changeBalance,
-                        u_balance: changeBalance,
+                        address: constants.daoAddress,
+                        balance: daoBalance,
+                        u_balance: daoBalance,
                         blockId: block.id,
                         round: modules.round.calc(block.height),
-                        fees: changeFees,
-                        rewards: changeRewards
-                    }, next);
-                }, cb);
+                        fees: daoFees,
+                        rewards: daoRewards
+                    }, cb);
+                }
             },
             function (cb) {
                 // distribute club bonus

@@ -637,6 +637,7 @@ Account.prototype.getAll = function (filter, fields, cb) {
     condition: filter,
     fields: realFields
   });
+  // console.log(sql);
 
   this.scope.dbLite.query(sql.query, sql.values, realConv, function (err, data) {
     if (err) {
@@ -689,6 +690,7 @@ Account.prototype.set = function (address, fields, cb) {
 }
 
 Account.prototype.merge = function (address, diff, cb) {
+  console.log(diff);
   var update = {}, remove = {}, insert = {}, insert_object = {}, remove_object = {}, round = [];
 
   var self = this;
@@ -698,8 +700,9 @@ Account.prototype.merge = function (address, diff, cb) {
   }
 
   if (diff['balance']) {
+    console.log(address + ' add balance ' + diff['balance'])
     library.balanceCache.addNativeBalance(address, diff['balance'])
-  }
+  } 
 
   this.editable.forEach(function (value) {
     if (diff[value]) {

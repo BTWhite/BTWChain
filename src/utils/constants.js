@@ -16,5 +16,6 @@ module.exports = {
   confirmationLength: 77,
   fixedPoint : Math.pow(10, 8),
   totalAmount: 6000000000000000,
-  maxTxsPerBlock: 500
+  maxTxsPerBlock: 500,
+  daoAddress: "18090897788582311190"
 }

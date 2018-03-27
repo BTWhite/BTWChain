@@ -8,6 +8,7 @@ module.exports = {
   IN_TRANSFER: 6,
   OUT_TRANSFER: 7,
   STORAGE: 8,
+  REWARDS: 9,
 
   // UIA: User Issue Asset
   UIA_ISSUER: 9,

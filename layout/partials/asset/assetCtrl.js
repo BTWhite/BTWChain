@@ -293,7 +293,7 @@ angular.module('btw').controller('assetCtrl', function ($scope, $rootScope, apiS
             return false;
         }
         let realAmount = $scope.dealBigNumber(parseInt($scope.amount) * Math.pow(10, $scope.currentAsset.precision));
-        let trs = AschJS.uia.createIssue($scope.myPublishmoneyName, String(realAmount), userService.secret, $scope.pbsecondPassword);
+        let trs = BtwJS.uia.createIssue($scope.myPublishmoneyName, String(realAmount), userService.secret, $scope.pbsecondPassword);
         postSerivice.writeoff(trs).success(function (res) {
             if (res.success === true) {
                 $scope.pbsecondPassword = '';

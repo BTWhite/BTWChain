@@ -1,7 +1,11 @@
 
+@import url('https://fonts.googleapis.com/css?family=IBM+Plex+Sans+Condensed');
+
 html, body {
     background-color: #f6f6f6; /*#edeef0*/
     height: 100%;
+    font-family: 'IBM Plex Sans Condensed', sans-serif;
+    font-size: 94%;
 }
 
 body::-webkit-scrollbar-track {
@@ -620,8 +624,8 @@ svg:nth-of-type(10) ellipse {
 }
 
 .cell-both {
-    height: 50px;
-    line-height: 50px;
+    height: 30px;
+    line-height: 30px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

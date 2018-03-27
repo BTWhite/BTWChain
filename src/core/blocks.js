@@ -769,9 +769,9 @@ Blocks.prototype.verifyBlock = function (block, votes, cb) {
     var blockSlotNumber = slots.getSlotNumber(block.timestamp);
     var lastBlockSlotNumber = slots.getSlotNumber(__cur.lastBlock.timestamp);
 
-    if (blockSlotNumber > slots.getSlotNumber() + 1 || blockSlotNumber <= lastBlockSlotNumber) {
+    /*if (blockSlotNumber > slots.getSlotNumber() + 1 || blockSlotNumber <= lastBlockSlotNumber) {
         return cb("Can't verify block timestamp: " + block.id);
-    }
+    }*/
 
     if (block.payloadLength > constants.maxPayloadLength) {
         return cb("Can't verify payload length of block: " + block.id);

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Bitcoin White</title>
+    <title>BitWhite</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <meta content="telephone=no" name="format-detection"/>
@@ -37,13 +37,23 @@
     <div id="wallet" ng-show="userlogin" class="ng-hide">
         <div class="leftmenu">
             <ul id="route">
-                <a onclick="appMain.MenuRoute(this);" data-toggle="false" style="border-bottom: 1px solid #fbf2ec;"><li><i class="os-icon os-icon-hamburger-menu-1" style="margin-left: 8px;font-size: 25px;"></i> <span class="hide name">Bitcoin White</span></li></a>
+                <a onclick="appMain.MenuRoute(this);" data-toggle="false" style="border-bottom: 1px solid #fbf2ec;"><li><i class="os-icon os-icon-hamburger-menu-1" style="margin-left: 8px;font-size: 25px;"></i> <span class="hide name">BitWhite</span></li></a>
                 <a ng-href="#/home" ng-class="{'active':$root.active=='home'}"><li><i class="os-icon os-icon-fingerprint" style="margin-left: 7px;"></i> <span class="hide">{{'HOME' | translate}}</span></li></a>
                 <a ng-href="#/blockchain" ng-class="{'active':$root.active=='blockchain'}"><li><i class="os-icon os-icon-hierarchy-structure-2" style="margin-left: 7px;"></i> <span class="hide">{{'BLOCKS' | translate}}</span></li></a>
                 <a ng-href="#/vote" ng-class="{'active':$root.active=='vote'}"><li><i class="os-icon os-icon-pie-chart-3" style="margin-left: 8px;"></i> <span class="hide">{{'VOTE' | translate}}</span></li></a>
                 <a ng-href="#/blockforging" ng-class="{'active':$root.active=='blockforging'}"><li><i class="os-icon os-icon-ui-92" style="margin-left: 8px;"></i> <span class="hide">{{'FORGING' | translate}}</span></li></a>
-                <a ng-click="assigneeShowInfo()" ng-show="$root.active=='blockforging'"><li ng-show="!delegate.username"><i class="os-icon os-icon-ui-22" style="margin-left: 8px;"></i> <span class="hide">{{'DELEGATE_REGISTER' | translate}}</span></li><li ng-show="delegate.username"><i class="os-icon os-icon-ui-22" style="margin-left: 5px;"></i> <span class="hide">{{delegate.username}}</span></li></a>
+                <a ng-show="$root.active=='blockforging' || $root.active=='payments'">
+                    <li ng-click="assigneeShowInfo()" ng-show="!delegate.username || delegate.username == ''">
+                        <i class="os-icon os-icon-ui-22" style="margin-left: 8px;"></i> 
+                        <span class="hide">{{'DELEGATE_REGISTER' | translate}}</span>
+                    </li>
+                    <li ng-show="delegate.username && delegate.username != ''" onclick="location.href='#/payments'" style="width: 100%" ng-class="{'active':$root.active=='payments'}">
+                        <i class="os-icon os-icon-robot-1" style="margin-left: 10px;"></i> 
+                        <span class="hide">Payments</span>
+                    </li>
+                </a>
                 <a ng-href="#/peer" ng-class="{'active':$root.active=='peer'}"><li><i class="os-icon os-icon-robot-2" style="margin-left: 5px;"></i> <span class="hide">{{'PEERS' | translate}}</span></li></a>
+
             </ul>
         </div>
         <div class="content">
@@ -61,6 +71,7 @@
     <div id="accountdetail" ng-show="accountdetailinfo" ng-include="'partials/modal/accountdetail/index.html'"></div>
     <div id="voteto" ng-show="votetoinfo" ng-include="'partials/modal/voteto/index.html'"></div>
     <div id="deletevoteto" ng-show="deletevotetoinfo" ng-include="'partials/modal/deletevote/index.html'"></div>
+    <div id="rewardinfo" ng-show="rewardinfo" ng-include="'partials/modal/rewardhistory/index.html'"></div>
     <!--/ END: MODALS -->
     <!--/ JAVASCRIPT -->
     <script type="text/javascript" src="./assets/js/jquery/dist/jquery.min.js"></script>
@@ -74,11 +85,13 @@
     <script type="text/javascript" src="./assets/js/angular-translate/angular-translate.js"></script>
     <script type="text/javascript" src="./assets/js/angular-route/angular-route.js"></script>
     <script type="text/javascript" src="./assets/js/angular-cookie/angular-cookie.min.js"></script>
+    <script type="text/javascript" src="./assets/js/angular-bignumber/bignumber.js"></script>
     <script type="text/javascript" src="./assets/js/jquery.toaster/jquery.toaster.js"></script>
     <script type="text/javascript" src="./assets/js/owlcarousel2-2.2.1/owl.carousel.min.js"></script>
     <script type="text/javascript" src="./assets/js/ng-table/dist/ng-table.js"></script>
     <script type="text/javascript" src="./assets/js/bitcore-mnemonic.js"></script>
     <script type="text/javascript" src="./assets/js/browserify-btw.js"></script>
+    <script type="text/javascript" src="./assets/js/bignumber/bignumber.min.js"></script>
     <script type="text/javascript" src="./translations/en-us.js"></script>
     <script type="text/javascript" src="./assets/js/app.main.js"></script>
     <script type="text/javascript" src="./assets/js/app.module.js"></script>
@@ -90,6 +103,8 @@
     <script type="text/javascript" src="./service/userService.js"></script>
     <script type="text/javascript" src="./partials/home/homeCtrl.js"></script>
     <script type="text/javascript" src="./partials/vote/voteCtrl.js"></script>
+    <script type="text/javascript" src="./partials/payments/paymentsCtrl.js"></script>
+    <script type="text/javascript" src="./partials/pay/payCtrl.js"></script>
     <script type="text/javascript" src="./partials/login/loginCtrl.js"></script>
     <script type="text/javascript" src="./partials/modal/transfer/transferCtrl.js"></script>
     <script type="text/javascript" src="./partials/peer/peerCtrl.js"></script>
@@ -100,6 +115,7 @@
     <script type="text/javascript" src="./partials/blockforging/blockforgingCtrl.js"></script>
     <script type="text/javascript" src="./partials/blockchain/blockchainCtrl.js"></script>
     <script type="text/javascript" src="./partials/modal/personal/personalCtrl.js"></script>
+    <script type="text/javascript" src="./partials/modal/rewardhistory/rewardCtrl.js"></script>
     <script type="text/javascript" src="./partials/modal/assignee/assigneeCtrl.js"></script>
     <script type="text/javascript" src="./partials/modal/blockdetail/blockdetailCtrl.js"></script>
     <script type="text/javascript" src="./partials/modal/accountdetail/accountdetailCtrl.js"></script>
@@ -107,6 +123,7 @@
     <script type="text/javascript" src="./partials/modal/deletevote/deletevoteCtrl.js"></script>
     <script type="text/javascript" src="./partials/modal/voteto/votetoCtrl.js"></script>
     <script type="text/javascript" src="./filter/timestampFilter.js"></script>
+    <script type="text/javascript" src="./filter/addressFilter.js"></script>
     <script type="text/javascript" src="./filter/catalogsFilter.js"></script>
     <script type="text/javascript" src="./filter/saveCheckfilter.js"></script>
     <script type="text/javascript" src="./filter/savecheckpbulish.js"></script>

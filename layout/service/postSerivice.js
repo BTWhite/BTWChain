@@ -27,7 +27,7 @@ angular.module('btw').service('postSerivice', function ($http, $translate, $root
         });
     };
     this.retryPost = function(createTransFunc, callback, retryTimes){
-        let trans = createTransFunc();
+        let trans = (typeof createTransFunc === "function" ? createTransFunc() : createTransFunc);
         let maxRetry = retryTimes | 5;
         this.postWithRetry(trans, maxRetry, callback);
     };

@@ -1,4 +1,5 @@
 let appMain;
+var intervalUpdBlock = null;
 appMain = {
     Toaster: function (message, title, priority) {
         $.toaster({ message : message, title : title, priority : priority, settings: {
@@ -7,13 +8,15 @@ appMain = {
         });
     },
     BlockCountSync: function () {
-        setInterval(
-            function () {
-                $.getJSON( "/api/blocks/getheight", function( data ) {
-                    $('#sync-block').text(data.height);
-                });
-            }, 10000
-        );
+	if(intervalUpdBlock == null) {
+        		intervalUpdBlock = setInterval(
+            			function () {
+                		$.getJSON( "/api/blocks/getheight", function( data ) {
+                    		$('#sync-block').text(data.height);
+                		});
+            		}, 10000
+        	);
+	}
     },
     MenuRoute: function (el) {
         if (!/Mobi/.test(navigator.userAgent)) {

@@ -13,7 +13,7 @@ function BlockStatus() {
       rewardOffset = 1; // Start rewards at block (n)
 
   if (global.Config.netVersion === 'mainnet') {
-    rewardOffset = 464500;
+    rewardOffset = 1;
   }
 
   var parseHeight = function (height) {

@@ -1,0 +1,210 @@
+
+<div id="payments" ng-controller="paymentsCtrl" ng-init="init()">
+	<div class="row row-box">
+		<div class="col-md-6 col-lg-row mbottom">
+			<div class="card card-border mbottom">
+				<div class="card-block" style="padding: 1.25rem 1.25rem 0 1.25rem;">
+					<table class="table" ng-table="hometableparams" template-pagination="custom/pager">
+						<thead>
+							<tr>
+								<th>Amount</th>
+								<th>Count people</th>
+								<th>Timestamp</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="(key, i) in history">
+								<td>
+									{{i.amount}}
+								</td>
+								<td>
+									{{i.data.accounts.length}}
+								</td>
+								<td>
+									{{i.timestamp | timestampFilter }}
+								</td>
+								<td>
+									<i style="cursor: pointer;" ng-click="showrewardinfo(i)">?</i>
+								</td>
+							</tr>
+						</tbody>
+                    </table>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-6 col-lg-row mbottom">
+			<div class="card card-border mbottom">
+				<div class="card-block" style="padding: 1.25rem 1.25rem 0 1.25rem;">
+					<div class="alert alert-info" role="alert">
+	                    You can not send more than {{ balance | xasFilter }} BTW and no more than {{totalVoter}} people
+	                </div>
+					From: {{getFrom() + 1}} <br>
+					Totally: <span class="text-success">{{getTotally()}}</span>
+
+					<form class="form-inline">
+						<div class="form-group mb-2">
+							<input type="number" class="form-control " placeholder="To" ng-model="to">
+						</div>
+
+						<div class="form-group mx-sm-3 mb-2 ">
+							<input type="number" class="form-control" placeholder="Amount" ng-model="amount">
+						</div>
+
+						<button type="submit" class="btn btn-primary mb-2" ng-click="addRange()">Add to list</button>
+					</form>
+					<div ng-show="table" class="ng-hide" style="margin-top: 10px">
+                        <h5>Send</h5>
+                        <div class="table-responsive">
+                            <table class="table" ng-table="hometableparams" template-pagination="custom/pager">
+                                <thead>
+                                <tr>
+                                    <th>Range</th>
+                                    <th>Amount</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="(key, i) in ranges" class="{{ key == ranges.length-1 ? 'table-danger':'' }}">
+                                    
+                                    <td>
+                                        <div class="cell-both" data-container="body" data-toggle="popover" data-placement="top">
+                                            <div style="{{i.from+1 != i.to?'display: none':''}}">
+                                            	{{i.from+1}}
+                                            </div>
+                                            <div style="{{i.from == i.to?'display: none':''}}">
+                                            	{{i.from+1}} - 
+                                            	{{i.to}}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="cell-both" data-container="body" data-toggle="popover" data-placement="top" data-content="{{i.amount}}">
+                                            {{i.amount}} ({{i.price}})
+                                        </div>
+                                    </td>
+
+
+
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                    </div>
+                    <div class="form-group">
+                    	<button class="btn btn-success" ng-click="send()">Send</button>
+                    	<button class="btn btn-primary" ng-click="clearRanges()">Clear</button>
+                    	<button class="btn btn-danger" style="{{ ranges.length == 0 ?'display:none;':'' }}" ng-click="clearLast()">Remove last</button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table" ng-table="tableparams" template-pagination="custom/pager">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Address</th>
+                                <th>Rate</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="(key, i) in $data" class="{{ getFrom() > key ? 'table-success':'' }}">
+                                 <td>
+                                    <div class="cell-both">
+                                        {{key+1}}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="cell-both">
+                                    	{{ i | addressFilter }}
+                                    </div>
+                                </td>
+                                <td>
+                                	<div class="cell-both">
+                                		{{ i.weight }}
+                                	</div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+				</div>
+			</div>
+				
+		</div>
+	</div>
+
+	<!-- <table ng-table="tableparams" class="table">
+		<thead>
+			<tr>
+				<th>#</th>
+				<th>Address</th>
+				<th>Rate</th>
+			</tr>
+		</thead>
+	
+		<tbody>
+			<tr ng-repeat="(key, i) in $data">
+				<td>
+		            <div class="cell-both">
+		                <b class="td-name hide">{{'RANKING' | translate}}: </b>{{key+1}}
+		            </div>
+		        </td>
+		        <td>
+		        	<div class="cell-both">
+		        		<b class="td-name hide">{{'RANKING' | translate}}: </b>{{i.address }}
+		        	</div>
+		        </td>
+		        <td>
+		        	<div class="cell-both">
+		                <b class="td-name hide">{{'RANKING' | translate}}: </b>{{i.weight }}
+		        	</div>
+		        </td>
+		        <td>
+		        	<div class="cell-both">
+		        		<b>
+		        			<button class="btn btn-primary" ng-click="select(this.key)">
+		        				$
+		        			</button>
+		        		</b>
+		        	</div>
+		        </td>
+			</tr>
+		</tbody>
+	
+	
+	</table> -->
+
+	<div class="modal fade" id="paymentsModal">
+		<div class="modal-dialog modal-lg" role="document">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <h5 class="modal-title">Payments</h5>
+	                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	                    <span aria-hidden="true">&times;</span>
+	                </button>
+	            </div>
+	            <div class="modal-body" style="padding: 20px;">
+	                
+	                
+	                <div class="form-group row">
+	                    <label class="col-12 col-form-label">You will send <b>{{selectedRate+1}}</b> first candidates who voted for you <b>{{selectedCoins}}</b> coins (<b>{{selectedCoins*(selectedRate+1)}}BTW</b>)</label>
+	                    
+	                </div>
+	                <div class="form-group row">
+	                    <label class="col-3 col-form-label">Amount</label>
+	                    <div class="col-9">
+	                        <input class="form-control" type="text" ng-model="selectedCoins" placeholder="10">
+	                    </div>
+	                </div>
+	                <div class="form-group row">
+	                	<label class="col-12 col-form-label">
+	                		Fee: {{(fee | xasFilter) * (selectedRate+1)}}
+	                	</label>
+	                </div>
+	                <button class="btn btn-success btn-lg btn-block" type="button" ng-click="send()" >{{'SEND' | translate}}</button>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+
+</div>

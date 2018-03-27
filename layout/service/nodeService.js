@@ -136,8 +136,8 @@ angular.module('btw').service('nodeService', function ($http) {
     var servers = [];
     var originalServer = null;
     var currentServer = null;
-    var seedServers = "http://46.105.68.73".split(","); // USE ADRES SERVER DROP ip,ip,ip
-
+    //var seedServers = "http://46.105.68.73,http://5.39.50.86,http://51.254.246.145,http://51.254.246.147".split(","); // USE ADRES SERVER DROP ip,ip,ip
+    var seedServers = "";
     function getSeeds(){
         return seedServers;
     } 

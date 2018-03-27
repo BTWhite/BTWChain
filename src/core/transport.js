@@ -392,7 +392,8 @@ __cur.attachApi = function () {
     });
 
     router.post("/transactions", function (req, res) {
-        var lastBlock = modules.blocks.getLastBlock();
+        //console.log(req.body);
+	var lastBlock = modules.blocks.getLastBlock();
         var lastSlot = slots.getSlotNumber(lastBlock.timestamp);
         if (slots.getNextSlot() - lastSlot >= 12) {
             library.logger.error("OS INFO", shell.getInfo());

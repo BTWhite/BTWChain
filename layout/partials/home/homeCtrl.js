@@ -21,10 +21,13 @@ angular.module('btw').controller('homeCtrl', function ($scope, $rootScope, $filt
             address: userService.address
         }).success(function (res) {
             if (res.success === true) {
-                $scope.account = res.account;
+                $rootScope.account = res.account;
                 $scope.latestBlock = res.latestBlock;
                 $scope.version = res.version;
                 userService.update(res.account, res.latestBlock);
+                $rootScope.balance = userService.balance;
+                $rootScope.username = userService.username;
+                console.log(userService);
                 $scope.userService = userService;
                 jiaoyi(userService.address, userService.publicKey);
             }

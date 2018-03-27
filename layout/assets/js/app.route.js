@@ -2,6 +2,9 @@ angular.module('btw').config(function ($routeProvider) {
 	$routeProvider.when('/personal', {
 		templateUrl: '../../partials/modal/personal/index.html'
 	});
+	$routeProvider.when('/payments', {
+		templateUrl: '../../partials/payments/index.html'
+	});
 	$routeProvider.when('/home', {
 		templateUrl: '../../partials/home/index.html'
 	});

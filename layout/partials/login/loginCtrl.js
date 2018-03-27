@@ -45,6 +45,9 @@ angular.module('btw').controller('loginCtrl', function ($scope, $rootScope, apiS
                     userService.setData($scope.secret, publicKey, res.account, res.latestBlock);
                     $rootScope.isLogin = true;
                     $location.path('/home');
+                    setTimeout(function() {
+                        if($rootScope.startWith.length > 2) $location.path($rootScope.startWith);
+                    }, 10);
                 }
             });
         }
