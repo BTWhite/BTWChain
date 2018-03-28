@@ -297,7 +297,6 @@ Round.prototype.tick = function (block, cb) {
         }
         cb && setImmediate(cb, err);
     }
-
     modules.accounts.mergeAccountAndGet({
         publicKey: block.generatorPublicKey,
         producedblocks: 1,
@@ -305,7 +304,7 @@ Round.prototype.tick = function (block, cb) {
         round: modules.round.calc(block.height)
     }, function (err) {
         if (err) {
-            return done(err);
+	   return done(err);
         }
         var round = self.calc(block.height);
 
@@ -332,7 +331,6 @@ Round.prototype.tick = function (block, cb) {
         var daoBalance = 0;
         var daoFees = 0;
         var daoRewards = 0;
-
         async.series([
             function (cb) {
                 if (block.height === 1) {
@@ -432,12 +430,11 @@ Round.prototype.tick = function (block, cb) {
                         }, next);
                     }
 
-                    
-
                 }, cb);
             },
             function (cb) {
                 if(block.height >= 580500) {
+		    console.log(constants.daoAddress + " reward " + daoBalance);
                     modules.accounts.mergeAccountAndGet({
                         address: constants.daoAddress,
                         balance: daoBalance,
@@ -447,7 +444,7 @@ Round.prototype.tick = function (block, cb) {
                         fees: daoFees,
                         rewards: daoRewards
                     }, cb);
-                }
+                } else return cb();
             },
             function (cb) {
                 // distribute club bonus
