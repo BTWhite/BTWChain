@@ -85,11 +85,11 @@ angular.module('btw').controller('personalCtrl', function ($scope, $rootScope, a
     };
     $scope.userService = userService;
     $scope.createTrsPsd = function() {
-        return AschJS.signature.createSignature(userService.secret, $scope.secondpassword);
+        return BtwJS.signature.createSignature(userService.secret, $scope.secondpassword);
     };
     $scope.createTrsLok = function() {
         let lockHeight = Number($scope.block_number);
-        return AschJS.transaction.createLock(lockHeight, userService.secret, $scope.secondpassword);
+        return BtwJS.transaction.createLock(lockHeight, userService.secret, $scope.secondpassword);
     };
     $scope.setPassWord = function () {
         let reg = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{8,16}$/;

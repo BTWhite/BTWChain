@@ -112,7 +112,7 @@ angular.module('btw').service('apiService', function ($http, $rootScope, $locati
         return fetch('/api/uia/assets', params, 'get')
     };
     this.broadcastTransaction = function (trans) {
-        return fetch('/peer/transactions', {transaction: trans}, 'post', {headers: {'magic': '5f5b3cf6', 'version': ''}});
+        return fetch('/peer/transactions', {transaction: trans}, 'post', {headers: {'magic': '5f5b3cf7', 'version': ''}});
     };
 
     this.storage = function(params) {

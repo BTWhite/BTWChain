@@ -7,7 +7,7 @@ angular.module('btw').controller('homeCtrl', function ($scope, $rootScope, $filt
     $scope.searchStr = "";
     $scope.search = function() {
         console.log($scope.searchStr);
-        let url = 'http://62.210.53.73:6040';
+        let url = 'https://bitwhite.info';
         if($scope.searchStr.length > 60) {
             $window.open(url + '/tx/' + $scope.searchStr);
         } else $window.open(url + '/address/' + $scope.searchStr);
