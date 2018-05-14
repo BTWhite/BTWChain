@@ -15,24 +15,35 @@ Above 2 GB RAM recommended
 Above 2MB bandwidth recommended
 
 # Install dependency package 
-sudo apt-get install curl sqlite3 ntp wget git libssl-dev openssl make gcc g++ autoconf automake python build-essential -y 
+
+```sudo apt-get install curl sqlite3 ntp wget git libssl-dev openssl make gcc g++ autoconf automake python build-essential -y ```
+
 # libsodium for ubuntu 16.04 
-sudo apt-get install libtool libtool-bin -y 
+
+```sudo apt-get install libtool libtool-bin -y```
  
 # Install nvm 
-curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash 
+
+```curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash ```
+
 # This loads nvm 
-export NVM_DIR="$HOME/.nvm" 
+
+```export NVM_DIR="$HOME/.nvm" 
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion 
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion```
  
 # Install node and npm for current user. 
-nvm install node 8 
+
+```nvm install node 8```
+
 # check node version and it should be v8.x.x 
-node --version 
+
+```node --version```
 
 # Install node packages 
-npm install
+
+```npm install```
 
 # After all package installing run node
-node index.js
+
+```node index.js```
