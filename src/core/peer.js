@@ -365,20 +365,17 @@ Peer.prototype.getVersion = function () {
     };
 };
 
-Peer.prototype.isCompatible = function (version) {
+Peer.prototype.
+isCompatible = function (version) {
     var nums = version.split('.').map(Number);
     if (nums.length != 3) {
         return true;
     }
-    var compatibleVersion = '0.0.0';
-    if (library.config.netVersion == 'testnet') {
-        compatibleVersion = '1.0.3';
-    } else if (library.config.netVersion == 'mainnet') {
-        compatibleVersion = '1.0.4';
-    }
+    var compatibleVersion = library.config.minVersion;
     var numsCompatible = compatibleVersion.split('.').map(Number);
     for (var i = 0; i < nums.length; ++i) {
         if (nums[i] < numsCompatible[i]) {
+            library.logger.trace(version + ' not compatible');
             return false;
         } else if (nums[i] > numsCompatible[i]) {
             return true;

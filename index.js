@@ -20,8 +20,10 @@ let defaultConfig = {
     dappsPath: 'dapps',
     netVersion: 'mainnet',
     blockchainFile: 'blockchain.db',
-    debug: ['logs', 'debug.log']
+    debug: ['logs', 'debug.log'],
+    minVersion: '1.0.5'
 };
+
 
 /**
  * @type {{genesis: node.genesis, init: node.init}}
@@ -81,6 +83,7 @@ let node = {
         appConfig.buildVersion = def.buildVersion;
         appConfig.netVersion = process.env.NET_VERSION || def.netVersion;
         appConfig.publicDir = path.join(baseDir, def.htmlPath);
+        appConfig.minVersion = def.minVersion;
 
         /** @namespace program.dapps */
         appConfig.dappsDir = program.dapps || path.join(baseDir, def.dappsPath);
