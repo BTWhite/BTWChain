@@ -483,7 +483,6 @@ function dblite() {
 			query: string,
 			dontParse: false
 		};
-
 		return self._query.apply(self, arguments);
 	};
 

@@ -740,7 +740,7 @@ Delegates.prototype.getDelegates = function (query, cb) {
     modules.accounts.getAccounts({
         isDelegate: 1,
         sort: {"vote": -1, "publicKey": 1}
-    }, ["username", "address", "publicKey", "vote", "missedblocks", "producedblocks", "fees", "rewards", "balance"], function (err, delegates) {
+    }, ["username", "address", "publicKey", "vote", "missedblocks", "producedblocks", "fees", "rewards", "balance", "fallrate"], function (err, delegates) {
         if (err) {
             return cb(err);
         }
@@ -759,13 +759,9 @@ Delegates.prototype.getDelegates = function (query, cb) {
         var length = Math.min(limit, count);
         var realLimit = Math.min(offset + limit, count);
 
-        var lastBlock = modules.blocks.getLastBlock();
-        var totalSupply = __cur.blockStatus.calcSupply(lastBlock.height);
-
         for (var i = 0; i < delegates.length; i++) {
             delegates[i].rate = i + 1;
-            delegates[i].approval = (delegates[i].vote / totalSupply) * 100;
-            delegates[i].approval = Math.round(delegates[i].approval * 1e2) / 1e2;
+            delegates[i].approval = self.calcApprovalRate(delegates[i]);
 
             var percent = 100 - (delegates[i].missedblocks / ((delegates[i].producedblocks + delegates[i].missedblocks) / 100));
             percent = Math.abs(percent) || 0;
@@ -785,6 +781,20 @@ Delegates.prototype.getDelegates = function (query, cb) {
             limit: realLimit
         });
     });
+}
+
+Delegates.prototype.calcApprovalRate = function(delegate) {
+    var lastBlock = modules.blocks.getLastBlock();
+    var totalSupply = __cur.blockStatus.calcSupply(lastBlock.height);
+
+    var rate = (delegate.vote / totalSupply) * 100;
+
+    /*if(delegate.fallrate > 0) {
+        rate -= (delegate.fallrate / 100);
+    }*/
+
+    rate = Math.round(rate * 1e2) / 1e2;
+    return rate;
 }
 
 Delegates.prototype.sandboxApi = function (call, args, cb) {

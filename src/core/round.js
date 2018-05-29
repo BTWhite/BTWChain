@@ -189,6 +189,7 @@ Round.prototype.backwardTick = function (block, previousBlock, cb) {
                 var escaped = outsiders.map(function (item) {
                     return "'" + item + "'";
                 });
+
                 library.dbLite.query('update mem_accounts set missedblocks = missedblocks - 1 where address in (' + escaped.join(',') + ')', function (err, data) {
                     cb(err);
                 });
@@ -304,7 +305,7 @@ Round.prototype.tick = function (block, cb) {
         round: modules.round.calc(block.height)
     }, function (err) {
         if (err) {
-	   return done(err);
+	       return done(err);
         }
         var round = self.calc(block.height);
 
@@ -318,6 +319,9 @@ Round.prototype.tick = function (block, cb) {
         __cur.delegatesByRound[round].push(block.generatorPublicKey);
 
         var nextRound = self.calc(block.height + 1);
+        var insiders = [];
+
+        
 
         if (round === nextRound && block.height !== 1) {
             return done();
@@ -349,7 +353,7 @@ Round.prototype.tick = function (block, cb) {
                             }
                         }
                     }
-                    cb();
+                    return cb();
                 });
             },
             function (cb) {
@@ -359,8 +363,40 @@ Round.prototype.tick = function (block, cb) {
                 var escaped = outsiders.map(function (item) {
                     return "'" + item + "'";
                 });
-                library.dbLite.query('update mem_accounts set missedblocks = missedblocks + 1 where address in (' + escaped.join(',') + ')', function (err, data) {
+
+                library.dbLite.query('update mem_accounts set missedblocks = missedblocks + 1, fallrate = fallrate + 1 where address in (' + escaped.join(',') + ')', function (err, data) {
                     cb(err);
+                });                
+            },
+            function (cb) {
+                // TODO, is mainnet
+                if (!outsiders.length) {
+                    return cb();
+                }
+                var escaped = outsiders.map(function (item) {
+                    return "'" + item + "'";
+                });
+
+                library.dbLite.query('update mem_accounts set vote = vote - '+ constants.fallrateAmount +' where vote > '+ constants.fallrateAmount +' and address in (' + escaped.join(',') + ')', function (err, data) {
+                    cb(err);
+                });
+            },
+            function (cb) {
+                modules.delegates.generateDelegateList(block.height, function (err, roundDelegates) {
+                    if (err) {
+                        return cb(err);
+                    }
+                    var escaped = roundDelegates.map(function (item) {
+                        if (global.featureSwitch.fixVoteNewAddressIssue) {
+                            return "'" + modules.accounts.generateAddressByPublicKey2(item) + "'";
+                        } else {
+                            return "'" + modules.accounts.generateAddressByPublicKey(item) + "'";
+                        }
+                    });
+                    
+                    library.dbLite.query('update mem_accounts set fallrate = fallrate - 1, vote = vote + '+ constants.fallrateAmount +'  where fallrate > 0 and address in (' + escaped.join(',') + ')', function (err, data) {
+                        return cb(err);
+                    });
                 });
             },
             // function (cb) {
@@ -434,7 +470,6 @@ Round.prototype.tick = function (block, cb) {
             },
             function (cb) {
                 if(block.height >= 580500) {
-		    console.log(constants.daoAddress + " reward " + daoBalance);
                     modules.accounts.mergeAccountAndGet({
                         address: constants.daoAddress,
                         balance: daoBalance,

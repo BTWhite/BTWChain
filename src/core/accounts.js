@@ -656,7 +656,8 @@ shared.getDelegates = function (req, cb) {
 
                     for (var i = 0; i < delegates.length; i++) {
                         delegates[i].rate = i + 1;
-                        delegates[i].approval = ((delegates[i].vote / totalSupply) * 100).toFixed(2);
+
+                        delegates[i].approval = modules.delegates.calcApprovalRate(delegates[i]).toFixed(2);
 
                         var percent = 100 - (delegates[i].missedblocks / ((delegates[i].producedblocks + delegates[i].missedblocks) / 100));
                         percent = percent || 0;

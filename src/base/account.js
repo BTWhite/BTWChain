@@ -293,6 +293,17 @@ function Account(scope, cb) {
       default: 0
     },
     {
+      name: "fallrate",
+      type: "BigInt",
+      filter: {
+        type: "integer",
+        minimum: -1,
+        maximum: 1
+      },
+      conv: Number,
+      default: 0
+    },
+    {
       name: "fees",
       type: "BigInt",
       filter: {
