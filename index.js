@@ -14,11 +14,11 @@ let defaultConfig = {
     version: '1.0.5',
     buildVersion: 'r1',
     config: 'config.json',
-    genesis: 'genesis.json',
+    genesis: 'genesisTestnet.json',
     basePath: './',
     htmlPath: 'layout',
     dappsPath: 'dapps',
-    netVersion: 'mainnet',
+    netVersion: 'testnet',
     blockchainFile: 'blockchain.db',
     debug: ['logs', 'debug.log'],
     minVersion: '1.0.5'
