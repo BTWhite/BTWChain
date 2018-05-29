@@ -11,8 +11,8 @@ const init = require('./src/init');
  * @type {{version: string, buildVersion: string, config: string, genesis: string, basePath: string, htmlPath: string, dappsPath: string, netVersion: string, blockchainFile: string, debug: string[]}}
  */
 let defaultConfig = {
-    version: '1.0.5',
-    buildVersion: 'r1',
+    version: '1.6.0',
+    buildVersion: 'b',
     config: 'config.json',
     genesis: 'genesisTestnet.json',
     basePath: './',
@@ -21,7 +21,7 @@ let defaultConfig = {
     netVersion: 'testnet',
     blockchainFile: 'blockchain.db',
     debug: ['logs', 'debug.log'],
-    minVersion: '1.0.5'
+    minVersion: '1.6.0'
 };
 
 
