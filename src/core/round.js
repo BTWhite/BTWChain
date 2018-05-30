@@ -364,7 +364,7 @@ Round.prototype.tick = function (block, cb) {
                     return "'" + item + "'";
                 });
 
-                library.dbLite.query('update mem_accounts set missedblocks = missedblocks + 1, fallrate = fallrate + 1 where address in (' + escaped.join(',') + ')', function (err, data) {
+                library.dbLite.query('update mem_accounts set missedblocks = missedblocks + 1 where address in (' + escaped.join(',') + ')', function (err, data) {
                     cb(err);
                 });                
             },
@@ -377,7 +377,7 @@ Round.prototype.tick = function (block, cb) {
                     return "'" + item + "'";
                 });
 
-                library.dbLite.query('update mem_accounts set vote = vote - '+ constants.fallrateAmount +' where vote >= '+ constants.fallrateAmount +' and address in (' + escaped.join(',') + ')', function (err, data) {
+                library.dbLite.query('update mem_accounts set fallrate = fallrate + 1, vote = vote - '+ constants.fallrateAmount +' where vote >= '+ constants.fallrateAmount +' and address in (' + escaped.join(',') + ')', function (err, data) {
                     cb(err);
                 });
             },
