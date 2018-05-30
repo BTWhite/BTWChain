@@ -382,21 +382,16 @@ Round.prototype.tick = function (block, cb) {
                 });
             },
             function (cb) {
-                modules.delegates.generateDelegateList(block.height, function (err, roundDelegates) {
-                    if (err) {
-                        return cb(err);
+                var escaped = __cur.delegatesByRound[round].map(function (item) {
+                    if (global.featureSwitch.fixVoteNewAddressIssue) {
+                        return "'" + modules.accounts.generateAddressByPublicKey2(item) + "'";
+                    } else {
+                        return "'" + modules.accounts.generateAddressByPublicKey(item) + "'";
                     }
-                    var escaped = roundDelegates.map(function (item) {
-                        if (global.featureSwitch.fixVoteNewAddressIssue) {
-                            return "'" + modules.accounts.generateAddressByPublicKey2(item) + "'";
-                        } else {
-                            return "'" + modules.accounts.generateAddressByPublicKey(item) + "'";
-                        }
-                    });
-                    
-                    library.dbLite.query('update mem_accounts set fallrate = fallrate - 1, vote = vote + '+ constants.fallrateAmount +'  where fallrate > 0 and address in (' + escaped.join(',') + ')', function (err, data) {
-                        return cb(err);
-                    });
+                });
+                
+                library.dbLite.query('update mem_accounts set fallrate = fallrate - 1, vote = vote + '+ constants.fallrateAmount +'  where fallrate > 0 and address in (' + escaped.join(',') + ')', function (err, data) {
+                    return cb(err);
                 });
             },
             // function (cb) {
