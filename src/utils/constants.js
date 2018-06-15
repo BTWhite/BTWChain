@@ -15,8 +15,8 @@ module.exports = {
   maxConfirmations : 77 * 100,
   confirmationLength: 77,
   fixedPoint : Math.pow(10, 8),
-  totalAmount: 100000000000000000,
+  totalAmount: 6000000000000000,
   maxTxsPerBlock: 500,
   daoAddress: "18090897788582311190",
-  fallrateAmount: 100000000000000000 / 10000
+  fallrateAmount: 6000000000000000 / 10000
 }

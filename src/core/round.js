@@ -369,7 +369,7 @@ Round.prototype.tick = function (block, cb) {
                 });                
             },
             function (cb) {
-                // TODO, is mainnet
+                if(block.height < 907888) return cb();
                 if (!outsiders.length) {
                     return cb();
                 }
@@ -389,7 +389,6 @@ Round.prototype.tick = function (block, cb) {
                         return "'" + modules.accounts.generateAddressByPublicKey(item) + "'";
                     }
                 });
-                
                 library.dbLite.query('update mem_accounts set fallrate = fallrate - 1, vote = vote + '+ constants.fallrateAmount +'  where fallrate > 0 and address in (' + escaped.join(',') + ')', function (err, data) {
                     return cb(err);
                 });
