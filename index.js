@@ -84,8 +84,8 @@ let node = {
         appConfig.netVersion = process.env.NET_VERSION || def.netVersion;
         appConfig.publicDir = path.join(baseDir, def.htmlPath);
         appConfig.minVersion = def.minVersion;
-        
-        if(typeof appConfig.forging.secret != 'undefined') {
+
+        if(typeof appConfig.forging.secret == 'undefined') {
             appConfig.forging.secret = JSON.parse(fs.readFileSync("delegates.json", 'utf8'));
         }
 
