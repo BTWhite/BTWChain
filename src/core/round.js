@@ -194,6 +194,18 @@ Round.prototype.backwardTick = function (block, previousBlock, cb) {
                     cb(err);
                 });
             },
+            function (cb) {
+                if (!outsiders.length) {
+                    return cb();
+                }
+                var escaped = outsiders.map(function (item) {
+                    return "'" + item + "'";
+                });
+
+                library.dbLite.query('update mem_accounts set fallrate = fallrate - 1, vote = vote + '+ constants.fallrateAmount +'  where fallrate > 0 and address in (' + escaped.join(',') + ')', function (err, data) {
+                    cb(err);
+                });
+            }
             // function (cb) {
             //   self.getVotes(round, function (err, votes) {
             //     if (err) {
