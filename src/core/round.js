@@ -127,14 +127,14 @@ Round.prototype.backwardTick = function (block, previousBlock, cb) {
 
         var prevRound = self.calc(previousBlock.height);
 
-        // __cur.unFeesByRound[round] = (__cur.unFeesByRound[round] || 0);
-        // __cur.unFeesByRound[round] += block.totalFee;
+        __cur.unFeesByRound[round] = (__cur.unFeesByRound[round] || 0);
+        __cur.unFeesByRound[round] += block.totalFee;
 
-        // __cur.unRewardsByRound[round] = (__cur.unRewardsByRound[round] || []);
-        // __cur.unRewardsByRound[round].push(block.reward);
+        __cur.unRewardsByRound[round] = (__cur.unRewardsByRound[round] || []);
+        __cur.unRewardsByRound[round].push(block.reward);
 
-        // __cur.unDelegatesByRound[round] = __cur.unDelegatesByRound[round] || [];
-        // __cur.unDelegatesByRound[round].push(block.generatorPublicKey);
+        __cur.unDelegatesByRound[round] = __cur.unDelegatesByRound[round] || [];
+        __cur.unDelegatesByRound[round].push(block.generatorPublicKey);
 
         __cur.feesByRound[round] = (__cur.feesByRound[round] || 0);
         __cur.feesByRound[round] -= block.totalFee;
