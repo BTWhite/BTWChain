@@ -11,7 +11,7 @@ const init = require('./src/init');
  * @type {{version: string, buildVersion: string, config: string, genesis: string, basePath: string, htmlPath: string, dappsPath: string, netVersion: string, blockchainFile: string, debug: string[]}}
  */
 let defaultConfig = {
-    version: '1.1.4',
+    version: '1.1.5',
     buildVersion: 'rc',
     config: 'config.json',
     genesis: 'genesis.json',
