@@ -91,7 +91,11 @@
                         </div>
                         
                     </div>
+                    <div class="form-group" ng-show="userService.secondPublicKey">
+                    	<input type="password" placeholder="Second secret" ng-model="secondPassword" class="form-control">
+                    </div>
                     <div class="form-group">
+
                     	<button class="btn btn-success" ng-click="send()">Send</button>
                     	<button class="btn btn-primary" ng-click="clearRanges()">Clear</button>
                     	<button class="btn btn-danger" style="{{ ranges.length == 0 ?'display:none;':'' }}" ng-click="clearLast()">Remove last</button>

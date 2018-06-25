@@ -12,6 +12,7 @@ angular.module('btw').controller('paymentsCtrl', function ($scope, $rootScope, a
     $scope.ranges = [];
     $scope.accounts = [];
     $scope.history = [];
+    $scope.userService = userService
 
     $scope.getFrom = function() {
         if($scope.ranges.length == 0) return 0;
