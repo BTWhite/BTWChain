@@ -100,6 +100,7 @@ __cur.isActive = false;
 __cur.blockCache = {};
 __cur.proposeCache = {};
 __cur.lastPropose = null;
+__cur.frozenCount = 0;
 
 const FULL_BLOCK_QUERY = "SELECT " +
     "b.id, b.version, b.timestamp, b.height, b.previousBlock, b.numberOfTransactions, b.totalAmount, b.totalFee, b.reward, b.payloadLength, lower(hex(b.payloadHash)), lower(hex(b.generatorPublicKey)), lower(hex(b.blockSignature)), " +
@@ -1375,8 +1376,9 @@ Blocks.prototype.onReceivePropose = function (propose) {
             return setImmediate(cb);
         }
 
-        if (__cur.lastPropose && __cur.lastPropose.height == propose.height && Date.now() - __cur.lastVoteTime < 60 * 1000) {
+        if (__cur.lastPropose && __cur.frozenCount <= 5 && __cur.lastPropose.height == propose.height && Date.now() - __cur.lastVoteTime < 60 * 1000) {
             library.logger.debug("propose height "+ propose.height +" is frozen for 60 seconds");
+            __cur.frozenCount++;
             return setImmediate(cb);
         }
 
@@ -1417,6 +1419,7 @@ Blocks.prototype.onReceivePropose = function (propose) {
                     modules.transport.sendVotes(votes, propose.address);
                     __cur.lastVoteTime = Date.now();
                     __cur.lastPropose = propose;
+                    __cur.frozenCount = 0;
                 }
                 setImmediate(next);
             }
