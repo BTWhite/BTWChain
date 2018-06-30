@@ -1374,6 +1374,12 @@ Blocks.prototype.onReceivePropose = function (propose) {
             library.logger.debug("ignore the frequently propose");
             return setImmediate(cb);
         }
+
+        if (__cur.lastPropose && __cur.lastPropose.height == propose.height && Date.now() - __cur.lastVoteTime < 60 * 1000) {
+            library.logger.debug("propose height "+ propose.height +" is frozen for 60 seconds");
+            return setImmediate(cb);
+        }
+
         library.logger.info("receive propose height " + propose.height + " bid " + propose.id);
         library.bus.message("newPropose", propose, true);
         async.waterfall([
