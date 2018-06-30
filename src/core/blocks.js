@@ -1376,9 +1376,14 @@ Blocks.prototype.onReceivePropose = function (propose) {
             return setImmediate(cb);
         }
 
+        if(__cur.lastPropose && __cur.lastPropose.height != propose.height) {
+            __cur.frozenCount = 0;
+            library.logger.debug("propose frozen counter clear");
+        }
+
         if (__cur.lastPropose && __cur.frozenCount <= 5 && __cur.lastPropose.height == propose.height && Date.now() - __cur.lastVoteTime < 60 * 1000) {
-            library.logger.debug("propose height "+ propose.height +" is frozen for 60 seconds");
             __cur.frozenCount++;
+            library.logger.debug("propose height "+ propose.height +" is frozen for 60 seconds (count: "+ __cur.frozenCount +")");
             return setImmediate(cb);
         }
 
@@ -1419,7 +1424,6 @@ Blocks.prototype.onReceivePropose = function (propose) {
                     modules.transport.sendVotes(votes, propose.address);
                     __cur.lastVoteTime = Date.now();
                     __cur.lastPropose = propose;
-                    __cur.frozenCount = 0;
                 }
                 setImmediate(next);
             }
