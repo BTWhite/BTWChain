@@ -396,7 +396,7 @@ __cur.attachApi = function () {
 	var lastBlock = modules.blocks.getLastBlock();
         var lastSlot = slots.getSlotNumber(lastBlock.timestamp);
         if (slots.getNextSlot() - lastSlot >= 12) {
-            library.logger.error("OS INFO", shell.getInfo());
+            //library.logger.error("OS INFO", shell.getInfo());
             library.logger.error("Blockchain is not ready", {
                 getNextSlot: slots.getNextSlot(),
                 lastSlot: lastSlot,
