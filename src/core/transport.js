@@ -395,7 +395,7 @@ __cur.attachApi = function () {
         //console.log(req.body);
 	var lastBlock = modules.blocks.getLastBlock();
         var lastSlot = slots.getSlotNumber(lastBlock.timestamp);
-        if (slots.getNextSlot() - lastSlot >= 12) {
+        /*if (slots.getNextSlot() - lastSlot >= 12) {
             //library.logger.error("OS INFO", shell.getInfo());
             library.logger.error("Blockchain is not ready", {
                 getNextSlot: slots.getNextSlot(),
@@ -403,7 +403,7 @@ __cur.attachApi = function () {
                 lastBlockHeight: lastBlock.height
             });
             return res.status(200).json({success: false, error: "Blockchain is not ready"});
-        }
+        }*/
 
         res.set(__cur.headers);
 
