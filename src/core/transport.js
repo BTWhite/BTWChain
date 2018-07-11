@@ -663,8 +663,7 @@ Transport.prototype.getFromPeer = function (peer, options, cb) {
             library.logger.debug('Request', {
                 url: req.url,
                 statusCode: response ? response.statusCode : 'unknown',
-                err: err,
-                response: response.body || null
+                err: err
             });
 
             if (peer) {
