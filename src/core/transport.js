@@ -675,12 +675,14 @@ Transport.prototype.getFromPeer = function (peer, options, cb) {
                         }
                     });
                 } else {
-                    if (!options.not_ban && response.statusCode != 429) {
-                        modules.peer.state(peer.ip, peer.port, 0, 600, function (err) {
-                            if (!err) {
-                                library.logger.info('Ban 10 min ' + req.method + ' ' + req.url);
-                            }
-                        });
+                    if (!options.not_ban) {
+                        if (response == null || response.statusCode == null || response.statusCode != 429) {
+                            modules.peer.state(peer.ip, peer.port, 0, 600, function (err) {
+                                if (!err) {
+                                    library.logger.info('Ban 10 min ' + req.method + ' ' + req.url);
+                                }
+                            });    
+                        }
                     }
                 }
             }
