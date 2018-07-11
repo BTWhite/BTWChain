@@ -336,7 +336,7 @@ __cur.attachApi = function () {
 
     router.use(function (req, res, next) {
         if (modules) return next();
-        res.status(500).send({success: false, error: "Blockchain is loading"});
+        res.status(429).send({success: false, error: "Blockchain is loading"});
     });
 
     router.map(shared, {
@@ -366,7 +366,7 @@ __cur.attachStorageApi = function () {
 
     router.use(function (req, res, next) {
         if (modules) return next();
-        res.status(500).send({success: false, error: "Blockchain is loading"});
+        res.status(429).send({success: false, error: "Blockchain is loading"});
     });
 
     router.map(shared, {

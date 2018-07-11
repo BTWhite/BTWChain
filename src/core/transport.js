@@ -35,7 +35,7 @@ __cur.attachApi = function () {
 
     router.use(function (req, res, next) {
         if (modules && __cur.loaded && !modules.loader.syncing()) return next();
-        res.status(500).send({success: false, error: "Blockchain is loading"});
+        res.status(429).send({success: false, error: "Blockchain is loading"});
     });
 
     router.use(function (req, res, next) {
@@ -393,7 +393,7 @@ __cur.attachApi = function () {
 
     router.post("/transactions", function (req, res) {
         //console.log(req.body);
-	var lastBlock = modules.blocks.getLastBlock();
+        var lastBlock = modules.blocks.getLastBlock();
         var lastSlot = slots.getSlotNumber(lastBlock.timestamp);
         /*if (slots.getNextSlot() - lastSlot >= 12) {
             //library.logger.error("OS INFO", shell.getInfo());
@@ -431,7 +431,8 @@ __cur.attachApi = function () {
         }
 
         if (__cur.invalidTrsCache.has(transaction.id)) {
-            return res.status(200).json({success: false, error: "Already processed transaction" + transaction.id});
+            library.logger.debug("Already processed transaction " + transaction.id);
+            return res.status(200).json({success: false, error: "Already processed transaction"  + transaction.id});
         }
 
         library.balancesSequence.add(function (cb) {
@@ -662,7 +663,8 @@ Transport.prototype.getFromPeer = function (peer, options, cb) {
             library.logger.debug('Request', {
                 url: req.url,
                 statusCode: response ? response.statusCode : 'unknown',
-                err: err
+                err: err,
+                response: response.body || null
             });
 
             if (peer) {
