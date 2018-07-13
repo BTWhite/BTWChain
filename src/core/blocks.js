@@ -1323,6 +1323,12 @@ Blocks.prototype.onReceiveBlock = function (block, votes) {
     if (__cur.blockCache[block.id]) {
         return;
     }
+
+    if (__cur.lastPropose && __cur.lastPropose.height == block.height && __cur.lastPropose.id != block.id) {
+        library.logger.error('The block '+ block.id +' received differs from the last propose');  
+        return;
+    }
+
     __cur.blockCache[block.id] = true;
 
     library.sequence.add(function receiveBlock(cb) {
@@ -1376,16 +1382,16 @@ Blocks.prototype.onReceivePropose = function (propose) {
             return setImmediate(cb);
         }
 
-        if(__cur.lastPropose && __cur.lastPropose.height != propose.height) {
+        /*if(__cur.lastPropose && __cur.lastPropose.height != propose.height) {
             __cur.frozenCount = 0;
             library.logger.debug("propose frozen counter clear");
         }
 
-        if (__cur.lastPropose && __cur.frozenCount <= 5 && __cur.lastPropose.height == propose.height && Date.now() - __cur.lastVoteTime < 40 * 1000) {
+        if (__cur.lastPropose && __cur.frozenCount <= 5 && __cur.lastPropose.height == propose.height && Date.now() - __cur.lastVoteTime < 20 * 1000) {
             __cur.frozenCount++;
-            library.logger.debug("propose height "+ propose.height +" is frozen for 60 seconds (count: "+ __cur.frozenCount +")");
+            library.logger.debug("propose height "+ propose.height +" is frozen for 20 seconds (count: "+ __cur.frozenCount +")");
             return setImmediate(cb);
-        }
+        }*/
 
         library.logger.info("receive propose height " + propose.height + " bid " + propose.id);
         library.bus.message("newPropose", propose, true);
