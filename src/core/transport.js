@@ -18,6 +18,8 @@ __cur.headers = {};
 __cur.loaded = false;
 __cur.messages = {};
 __cur.invalidTrsCache = new LimitCache();
+__cur.unconfirmedBuff = [];
+__cur.unconfirmedTimer = null;
 
 // Constructor
 function Transport(cb, scope) {
@@ -409,47 +411,82 @@ __cur.attachApi = function () {
 
         var peerIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
         var peerStr = peerIp ? peerIp + ":" + (isNaN(req.headers['port']) ? 'unknown' : req.headers['port']) : 'unknown';
-        if (typeof req.body.transaction == 'string') {
-            req.body.transaction = library.protobuf.decodeTransaction(new Buffer(req.body.transaction, 'base64'));
-        }
-        try {
-            var transaction = library.base.transaction.objectNormalize(req.body.transaction);
-            transaction.asset = transaction.asset || {}
-        } catch (e) {
-            library.logger.error("transaction parse error", {
+        
+        if ((!!req.body) && (req.body.constructor === Object)) {
+            if (typeof req.body.transaction == 'string') {
+                req.body.transaction = library.protobuf.decodeTransaction(new Buffer(req.body.transaction, 'base64'));
+            }
+
+            return process(req.body.transaction, req, function(data) {
+                return res.status(200).json(data);
+            })
+
+        } else if (!Array.isArray(req.body)) {
+            library.logger.error("transactions list parse error", {
                 raw: req.body,
-                trs: transaction,
-                error: e.toString()
+                type: typeof req.body
             });
-            library.logger.log('Received transaction ' + (transaction ? transaction.id : 'null') + ' is not valid, ban 60 min', peerStr);
+            return {success: false, error: "Invalid transaction list body"};
+        } 
 
-            if (peerIp && req.headers['port'] > 0 && req.headers['port' < 65536]) {
-                modules.peer.state(ip.toLong(peerIp), req.headers['port'], 0, 3600);
+        var results = [];
+        for (var i = req.body.length - 1; i >= 0; i--) {
+            if (typeof req.body[i].transaction == 'string') {
+                req.body[i].transaction = library.protobuf.decodeTransaction(new Buffer(req.body[i].transaction, 'base64'));
             }
-
-            return res.status(200).json({success: false, error: "Invalid transaction body"});
+            process(req.body[i].transaction, req, function(data) {
+                results.push(data);
+            })
+            
         }
 
-        if (__cur.invalidTrsCache.has(transaction.id)) {
-            library.logger.debug("Already processed transaction " + transaction.id);
-            return res.status(200).json({success: false, error: "Already processed transaction"  + transaction.id});
+        if(results.length == 1) {
+            return res.status(200).json(results[0]);
+        } else {
+            return res.status(200).json(results);
         }
+        
 
-        library.balancesSequence.add(function (cb) {
-            if (modules.transactions.hasUnconfirmedTransaction(transaction)) {
-                return cb('Already exists');
+        function process(trs, req, cb) {
+            try {
+                var transaction = library.base.transaction.objectNormalize(trs);
+                transaction.asset = transaction.asset || {}
+            } catch (e) {
+                library.logger.error("transaction parse error", {
+                    raw: trs,
+                    trs: transaction,
+                    error: e.toString()
+                });
+                library.logger.log('Received transaction ' + (transaction ? transaction.id : 'null') + ' is not valid, ban 60 min', peerStr);
+
+                if (peerIp && req.headers['port'] > 0 && req.headers['port' < 65536]) {
+                    modules.peer.state(ip.toLong(peerIp), req.headers['port'], 0, 3600);
+                }
+
+                return cb({success: false, error: "Invalid transaction body"});
             }
-            library.logger.log('Received transaction ' + transaction.id + ' from peer ' + peerStr);
-            modules.transactions.receiveTransactions([transaction], cb);
-        }, function (err, transactions) {
-            if (err) {
-                library.logger.warn('Receive invalid transaction,id is', transaction.id, err);
-                __cur.invalidTrsCache.set(transaction.id, true);
-                res.status(200).json({success: false, error: err});
-            } else {
-                res.status(200).json({success: true, transactionId: transactions[0].id});
+
+            if (__cur.invalidTrsCache.has(transaction.id)) {
+                library.logger.debug("Already processed transaction " + transaction.id);
+                return cb({success: false, error: "Already processed transaction"  + transaction.id});
             }
-        });
+
+            library.balancesSequence.add(function (cb) {
+                if (modules.transactions.hasUnconfirmedTransaction(transaction)) {
+                    return cb('Already exists');
+                }
+                library.logger.log('Received transaction ' + transaction.id + ' from peer ' + peerStr);
+                modules.transactions.receiveTransactions([transaction], cb);
+            }, function (err, transactions) {
+                if (err) {
+                    library.logger.warn('Receive invalid transaction,id is', transaction.id, err);
+                    __cur.invalidTrsCache.set(transaction.id, true);
+                    return cb({success: false, error: err})
+                } else {
+                    return cb({success: true, transactionId: transactions[0].id});
+                }
+            });
+        }
     });
 
     router.get('/height', function (req, res) {
@@ -766,12 +803,30 @@ Transport.prototype.onSignature = function (signature, broadcast) {
     }
 };
 
-Transport.prototype.onUnconfirmedTransaction = function (transaction, broadcast) {
+Transport.prototype.onUnconfirmedTransaction = function (transaction, broadcast) {    
+    function sendTransactions() {
+        self.broadcast({}, {api: '/transactions', data: __cur.unconfirmedBuff, method: "POST"});
+        __cur.unconfirmedBuff = [];
+        __cur.unconfirmedTimer = null;
+    }
+
     if (broadcast) {
         var data = {
             transaction: library.protobuf.encodeTransaction(transaction).toString('base64')
         };
-        self.broadcast({}, {api: '/transactions', data: data, method: "POST"});
+
+        if (__cur.unconfirmedTimer != null) {
+            clearTimeout(__cur.unconfirmedTimer);
+            __cur.unconfirmedTimer = null;
+        }
+
+        __cur.unconfirmedBuff.push(data);
+        
+        if (__cur.unconfirmedBuff.length > 200) {
+            sendTransactions();
+        } else {
+             __cur.unconfirmedTimer = setTimeout(sendTransactions, 400);
+        }
         library.network.io.sockets.emit('transactions/change', {});
     }
 };
