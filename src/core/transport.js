@@ -614,7 +614,7 @@ __cur.hashsum = function (obj) {
 };
 
 Transport.prototype.broadcast = function (config, options, cb) {
-    config.limit = 60;
+    config.limit = 30;
     modules.peer.list(config, function (err, peers) {
         if (!err) {
             async.eachLimit(peers, 5, function (peer, cb) {
