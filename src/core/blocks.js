@@ -1381,10 +1381,9 @@ Blocks.prototype.onReceivePropose = function (propose) {
             library.logger.debug("propose frozen counter clear");
         }
 
-        if (__cur.lastPropose && __cur.frozenCount <= 5 && __cur.lastPropose.height == propose.height && Date.now() - __cur.lastVoteTime < 60 * 1000) {
+        if (__cur.lastPropose && __cur.frozenCount <= 5 && __cur.lastPropose.height == propose.height && Date.now() - __cur.lastVoteTime < 40 * 1000) {
             __cur.frozenCount++;
             library.logger.debug("propose height "+ propose.height +" is frozen for 60 seconds (count: "+ __cur.frozenCount +")");
-            modules.loader.startSyncBlocks();
             return setImmediate(cb);
         }
 

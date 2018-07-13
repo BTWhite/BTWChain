@@ -825,7 +825,7 @@ Transport.prototype.onUnconfirmedTransaction = function (transaction, broadcast)
         if (__cur.unconfirmedBuff.length > 200) {
             sendTransactions();
         } else {
-             __cur.unconfirmedTimer = setTimeout(sendTransactions, 400);
+             __cur.unconfirmedTimer = setTimeout(sendTransactions, 800);
         }
         library.network.io.sockets.emit('transactions/change', {});
     }
