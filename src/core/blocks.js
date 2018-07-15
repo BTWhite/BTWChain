@@ -1429,8 +1429,8 @@ Blocks.prototype.onReceivePropose = function (propose) {
                     library.logger.debug("send votes height " + votes.height + " id " + votes.id + " sigatures " + votes.signatures.length);
                     modules.transport.sendVotes(votes, propose.address);
                     __cur.lastVoteTime = Date.now();
-                    __cur.lastPropose = propose;
                 }
+                __cur.lastPropose = propose;
                 setImmediate(next);
             }
         ], function (err) {
