@@ -813,7 +813,6 @@ shared.getTransactions = function (req, cb) {
             return cb(err[0].message);
         }
 
-	console.log(query);
         __cur.list(query, function (err, data) {
             if (err) {
                 return cb("Failed to get transactions");
