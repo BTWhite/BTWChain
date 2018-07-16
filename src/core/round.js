@@ -347,6 +347,7 @@ Round.prototype.tick = function (block, cb) {
         var daoBalance = 0;
         var daoFees = 0;
         var daoRewards = 0;
+        var activeKeypairs = [];
         async.series([
             function (cb) {
                 if (block.height === 1) {
@@ -535,6 +536,51 @@ Round.prototype.tick = function (block, cb) {
                 } else {
                     cb()
                 }
+            },
+            function (cb) {
+
+                modules.delegates.generateDelegateList(block.height, function (err, delegates) {
+                    if (err) {
+                        return cb(err);
+                    }
+
+                    var start = round % slots.delegates;
+                    var end = start + slots.judges;
+                    var judges = delegates.slice(start, end);
+
+                    library.logger.debug("Next judges: ", judges);
+                    library.base.consensus.setJudges(judges);
+
+                    cb(null);
+                });
+            },
+            function (cb) {
+                modules.delegates.getActiveDelegateKeypairs(block.height, function (err, kp) {
+                    if (err) {
+                        cb("Failed to get active keypairs: " + err);
+                    } else {
+                        activeKeypairs = kp;
+                        cb(null);
+                    }
+                });
+            },
+            function (cb) {
+                library.bus.message("clearJudges");
+            },
+            function (cb) {
+                var judges = library.base.consensus.getJudges();
+                
+                for (var i = activeKeypairs.length - 1; i >= 0; i--) {
+                    
+                    var publicKey = activeKeypairs[i].publicKey.toString("hex");
+                    if(judges.indexOf(publicKey) != -1) {
+                        library.logger.log("Finded local judge: " + publicKey);
+                        var judge = library.base.consensus.createJudge(activeKeypairs[i], library.config.publicIp + ':' + library.config.port);
+                        library.bus.message("judge", judge, true);
+                    }
+                }
+                
+                cb();
             }
         ], function (err) {
             delete __cur.feesByRound[round];

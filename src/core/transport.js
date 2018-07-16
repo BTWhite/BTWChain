@@ -20,6 +20,7 @@ __cur.messages = {};
 __cur.invalidTrsCache = new LimitCache();
 __cur.unconfirmedBuff = [];
 __cur.unconfirmedTimer = null;
+__cur.judgesList = [];
 
 // Constructor
 function Transport(cb, scope) {
@@ -589,6 +590,46 @@ __cur.attachApi = function () {
         });
     });
 
+    router.post('/judge', function (req, res) {
+        res.set(__cur.headers);
+
+        library.scheme.validate(req.body, {
+            type: "object",
+            properties: {
+                judge: {
+                    type: "object"
+                }
+            },
+            required: ["judge"]
+        }, function (err) {
+            if (err) {
+                library.logger.log(err);
+                return res.status(200).json({success: false, error: "Schema validation error"});
+            }
+
+            for (var i = __cur.judgesList.length - 1; i >= 0; i--) {
+                if (__cur.judgesList[i].publicKey == req.body.judge.publicKey) {
+                    library.logger.debug('Judge already processed: ' + req.body.judge.publicKey);
+                    return res.sendStatus(200);
+                }
+            }
+
+            var judges = library.base.consensus.getJudges();
+
+            for (var i = judges.length - 1; i >= 0; i--) {
+                if (judges[i] == req.body.judge.publicKey) {
+                    library.logger.debug("Judge accepted: " + req.body.judge.publicKey);
+                    library.bus.message("judge", req.body.judge, true);
+                    __cur.judgesList.push(req.body.judge);
+                    return res.sendStatus(200);
+                }
+            }
+
+            library.logger.debug("Received invalid judge: " + req.body.judge.publicKey);
+            return res.sendStatus(200);
+        });
+    });
+
     router.use(function (req, res, next) {
         res.status(500).send({success: false, error: "API endpoint not found"});
     });
@@ -700,7 +741,8 @@ Transport.prototype.getFromPeer = function (peer, options, cb) {
             library.logger.debug('Request', {
                 url: req.url,
                 statusCode: response ? response.statusCode : 'unknown',
-                err: err
+                err: err,
+                content: body
             });
 
             if (peer) {
@@ -802,6 +844,16 @@ Transport.prototype.onSignature = function (signature, broadcast) {
         library.network.io.sockets.emit('signature/change', {});
     }
 };
+
+Transport.prototype.onJudge = function (judge, broadcast) {
+    if (broadcast) {
+        self.broadcast({}, {api: '/judge', data: {judge: judge}, method: "POST"});
+    }
+}
+
+Transport.prototype.onClearJudges = function() {
+    __cur.judgesList = [];
+}
 
 Transport.prototype.onUnconfirmedTransaction = function (transaction, broadcast) {    
     function sendTransactions() {

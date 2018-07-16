@@ -10,6 +10,7 @@ function Consensus(scope, cb) {
   this.scope = scope;
   this.pendingBlock = null;
   this.pendingVotes = null;
+  this.judges = [];
   this.votesKeySet = {};
   cb && setImmediate(cb, null, this);
 }
@@ -57,13 +58,7 @@ Consensus.prototype.getVoteHash = function (height, id) {
 }
 
 Consensus.prototype.hasEnoughVotes = function (votes) {
-  
-  if(votes && votes.height < 626500){
-    return votes && votes.signatures && votes.signatures.length > 20;
-  } else {
-    return votes && votes.signatures && votes.signatures.length > slots.delegates * 2 / 3;
-  }
-
+  return votes && votes.signatures && votes.signatures.length > slots.delegates * 2 / 3;
 }
 
 Consensus.prototype.hasEnoughVotesRemote = function (votes) {
@@ -130,6 +125,32 @@ Consensus.prototype.createPropose = function (keypair, block, address) {
   propose.hash = hash.toString("hex");
   propose.signature = ed.Sign(hash, keypair).toString("hex");
   return propose;
+}
+
+Consensus.prototype.createJudge = function(keypair, address) {
+  var judge = {
+    publicKey: keypair.publicKey.toString("hex"),
+    address: address
+  }
+
+  var bytes = new ByteBuffer();
+  var parts = address.split(':');
+  bytes.writeInt(ip.toLong(parts[0]));
+  bytes.writeInt(Number(parts[1]));
+  bytes.flip();
+  var hash = crypto.createHash('sha256').update(bytes.toBuffer()).digest();
+
+  judge.signature = ed.Sign(hash, keypair).toString("hex");
+
+  return judge;
+}
+
+Consensus.prototype.getJudges = function () {
+  return this.judges;
+}
+
+Consensus.prototype.setJudges = function (judges) {
+  return this.judges = judges;
 }
 
 Consensus.prototype.getProposeHash  = function (propose) {
