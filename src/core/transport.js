@@ -232,11 +232,6 @@ __cur.attachApi = function () {
     router.post("/judge/blocks", function t(req, res) {
         if(self.hasUnknownJudges()) {
             library.bus.message("searchJudges");
-            setTimeout(function() {
-                t(req, null);
-            }, 1000);
-            res && res.set(__cur.headers);
-            return res && res.sendStatus(429);
         }
 
         res && res.set(__cur.headers);
@@ -345,7 +340,7 @@ __cur.attachApi = function () {
 
                         }
 
-                        if(__cur.judgesSucc + __cur.judgesErr == slots.judges) {
+                        if(__cur.judgesSucc + __cur.judgesErr == __cur.judgesList.length) {
                             __cur.judgeDecision(block.height, function(err, blockId) {
                                 if(err) {
                                     library.logger.error(err);
