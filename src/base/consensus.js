@@ -127,7 +127,28 @@ Consensus.prototype.createPropose = function (keypair, block, address) {
   return propose;
 }
 
-Consensus.prototype.createJudge = function(keypair, address) {
+Consensus.prototype.isValidJudge = function (judge) {
+
+  var judges = this.getJudges();
+  
+  var publicKey = null;
+  if (typeof judge == "string") {
+    publicKey = judge;
+  } else if (typeof judge == "object") {
+    publicKey = judge.publicKey;
+  } else {
+    library.logger.debug("Received invalid judge type");
+    return false;
+  }
+  
+
+  if (judges.indexOf(publicKey) != -1) {
+    return true;
+  }
+  return false;
+}
+
+Consensus.prototype.createJudge = function (keypair, address) {
   var judge = {
     publicKey: keypair.publicKey.toString("hex"),
     address: address
@@ -149,6 +170,27 @@ Consensus.prototype.getJudges = function () {
   return this.judges;
 }
 
+Consensus.prototype.calcJudges = function (height, cb) {
+  if (height == null) {
+    height = modules.blocks.getLastBlock().height;
+  }
+  var round = modules.round.calc(height);
+
+  modules.delegates.generateDelegateList(height, function (err, delegates) {
+      if (err) {
+          return cb && cb(err);
+      }
+
+      var start = round % (slots.delegates - 10);
+      var end = start + slots.judges;
+      var judges = delegates.slice(start, end);
+
+      library.logger.debug("Next judges: " + judges + " ("+ start +", "+ end +")");
+      library.base.consensus.setJudges(judges);
+
+      cb && cb(null);
+  });
+}
 Consensus.prototype.setJudges = function (judges) {
   return this.judges = judges;
 }

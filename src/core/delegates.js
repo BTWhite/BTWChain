@@ -814,6 +814,19 @@ Delegates.prototype.onBind = function (scope) {
     modules = scope;
 }
 
+Delegates.prototype.beforeLoadMyDelegates = function (cb) {
+    if(!__cur.loaded) {
+        return setTimeout(self.beforeLoadMyDelegates, 1000, cb);
+    }
+    __cur.loadMyDelegates(function(err) {
+        if(err) {
+            library.logger.error("Failed to load delegates", err);
+        } else {
+            cb();
+        }
+    });
+}
+
 Delegates.prototype.onBlockchainReady = function () {
     __cur.loaded = true;
 
@@ -825,7 +838,6 @@ Delegates.prototype.onBlockchainReady = function () {
         __cur.loop(function () {
             setTimeout(nextLoop, 100);
         });
-
     });
 }
 

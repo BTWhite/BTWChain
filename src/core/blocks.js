@@ -179,7 +179,7 @@ __cur.attachApi = function () {
     library.network.app.use(function (err, req, res, next) {
         if (!err) return next();
         library.logger.error(req.url, err.toString());
-        res.status(500).send({success: false, error: err.toString()});
+        res && res.status(500).send({success: false, error: err.toString()});
     });
 }
 
@@ -1354,6 +1354,8 @@ Blocks.prototype.onReceiveBlock = function (block, votes) {
 };
 
 Blocks.prototype.onReceivePropose = function (propose) {
+    library.logger.debug("onReceivePropose enter");
+
     if (modules.loader.syncing() || !__cur.loaded) {
         return;
     }
@@ -1456,6 +1458,13 @@ Blocks.prototype.onReceiveVotes = function (votes) {
             var block = library.base.consensus.getPendingBlock();
             var height = block.height;
             var id = block.id;
+            var data = {
+                block: library.protobuf.encodeBlock(block).toString('base64'),
+                votes: library.protobuf.encodeBlockVotes(votes).toString('base64')
+            };
+            modules.transport.broadcastJudges({api: '/judge/blocks', data: data, method: "POST"}, cb);
+            /*
+            
             self.processBlock(block, totalVotes, true, true, false, function (err) {
                 if (err) {
                     library.logger.error("Failed to process confirmed block height: " + height + " id: " + id + " error: " + err);
@@ -1466,8 +1475,8 @@ Blocks.prototype.onReceiveVotes = function (votes) {
                     ' round: ' + modules.round.calc(height) +
                     ' slot: ' + slots.getSlotNumber(block.timestamp) +
                     ' reward: ' + block.reward);
-                cb();
-            });
+                
+            });*/
         } else {
             setImmediate(cb);
         }

@@ -525,6 +525,11 @@ Round.prototype.tick = function (block, cb) {
                 });
             },
             function (cb) {
+                library.bus.message("clearJudges");
+                cb();
+            },
+            self.calcJudges,
+            function (cb) {
                 // Fix NaN asset balance issue caused by flowed amount validate function
 
                 if (round === 33348) {
@@ -536,51 +541,6 @@ Round.prototype.tick = function (block, cb) {
                 } else {
                     cb()
                 }
-            },
-            function (cb) {
-
-                modules.delegates.generateDelegateList(block.height, function (err, delegates) {
-                    if (err) {
-                        return cb(err);
-                    }
-
-                    var start = round % slots.delegates;
-                    var end = start + slots.judges;
-                    var judges = delegates.slice(start, end);
-
-                    library.logger.debug("Next judges: ", judges);
-                    library.base.consensus.setJudges(judges);
-
-                    cb(null);
-                });
-            },
-            function (cb) {
-                modules.delegates.getActiveDelegateKeypairs(block.height, function (err, kp) {
-                    if (err) {
-                        cb("Failed to get active keypairs: " + err);
-                    } else {
-                        activeKeypairs = kp;
-                        cb(null);
-                    }
-                });
-            },
-            function (cb) {
-                library.bus.message("clearJudges");
-            },
-            function (cb) {
-                var judges = library.base.consensus.getJudges();
-                
-                for (var i = activeKeypairs.length - 1; i >= 0; i--) {
-                    
-                    var publicKey = activeKeypairs[i].publicKey.toString("hex");
-                    if(judges.indexOf(publicKey) != -1) {
-                        library.logger.log("Finded local judge: " + publicKey);
-                        var judge = library.base.consensus.createJudge(activeKeypairs[i], library.config.publicIp + ':' + library.config.port);
-                        library.bus.message("judge", judge, true);
-                    }
-                }
-                
-                cb();
             }
         ], function (err) {
             delete __cur.feesByRound[round];
@@ -592,6 +552,50 @@ Round.prototype.tick = function (block, cb) {
     });
 };
 
+Round.prototype.calcJudges = function (done) {
+    var height = modules.blocks.getLastBlock().height;
+    var round = self.calc(height);
+
+    async.series([
+        function (cb) {
+            library.base.consensus.calcJudges(height, function(err) {
+
+                cb(err);
+            });
+        },
+        function (cb) {
+            modules.delegates.getActiveDelegateKeypairs(height, function (err, activeKeypairs) {
+                if (err) {
+                    cb("Failed to get active keypairs: " + err);
+                } else {
+                    var judges = library.base.consensus.getJudges();
+                        
+                    for (var i = activeKeypairs.length - 1; i >= 0; i--) {
+                        
+                        var publicKey = activeKeypairs[i].publicKey.toString("hex");
+                        if(judges.indexOf(publicKey) != -1) {
+                            var judge = library.base.consensus.createJudge(activeKeypairs[i], library.config.publicIp + ':' + library.config.port);
+
+                            modules.transport.addJudge(judge, function (err) {
+                                if (err) {
+                                    library.logger.debug("Received invalid judge: " + err);
+                                } else {
+                                    library.logger.debug("Local judge accepted: " + judge.publicKey);
+                                }
+                            }, true);
+                        }
+                    }
+                    cb(null);
+                }
+            });
+        }
+
+    ], function(err) {
+        done && done(err);
+    });
+    
+}
+
 Round.prototype.sandboxApi = function (call, args, cb) {
     sandboxHelper.callMethod(shared, call, args, cb);
 };
@@ -599,6 +603,15 @@ Round.prototype.sandboxApi = function (call, args, cb) {
 // Events
 Round.prototype.onBind = function (scope) {
     modules = scope;
+    modules.delegates.beforeLoadMyDelegates(function() {
+        setTimeout(function() {
+            modules.round.calcJudges(function(err) {
+                if(err) {
+                    library.logger.error(err);
+                }
+            });
+        }, 1000);
+    });
 };
 
 Round.prototype.onBlockchainReady = function () {
