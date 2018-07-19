@@ -528,7 +528,9 @@ Round.prototype.tick = function (block, cb) {
                 library.bus.message("clearJudges");
                 cb();
             },
-            self.calcJudges,
+            function (cb) {
+               self.calcJudges(modules.blocks.getLastBlock().height + 1, cb);
+            },
             function (cb) {
                 // Fix NaN asset balance issue caused by flowed amount validate function
 
@@ -552,8 +554,7 @@ Round.prototype.tick = function (block, cb) {
     });
 };
 
-Round.prototype.calcJudges = function (done) {
-    var height = modules.blocks.getLastBlock().height;
+Round.prototype.calcJudges = function (height, done) {
     var round = self.calc(height);
 
     async.series([
@@ -605,7 +606,7 @@ Round.prototype.onBind = function (scope) {
     modules = scope;
     modules.delegates.beforeLoadMyDelegates(function() {
         setTimeout(function() {
-            modules.round.calcJudges(function(err) {
+            modules.round.calcJudges(modules.blocks.getLastBlock().height, function(err) {
                 if(err) {
                     library.logger.error(err);
                 }
