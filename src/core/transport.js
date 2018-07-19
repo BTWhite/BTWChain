@@ -38,7 +38,7 @@ __cur.attachApi = function () {
     var router = new Router();
 
     router.use(function (req, res, next) {
-	if (req.url.startsWith("/judge")) return next();
+        if (req.url.startsWith("/judge")) return next();
         if (modules && __cur.loaded && !modules.loader.syncing()) return next();
         res.status(429).send({success: false, error: "Blockchain is loading"});
     });
@@ -330,7 +330,6 @@ __cur.attachApi = function () {
                             __cur.judgesSucc = 0;
                         }
 
-                        __cur.judgesSucc++;
                         if (__cur.judgesErr == undefined || __cur.judgesErr == null || __cur.judgesSucc == NaN) {
                             __cur.judgesErr = 0;
                         }
@@ -338,10 +337,11 @@ __cur.attachApi = function () {
                         if (err) {    
                             __cur.judgesErr++;
                             library.logger.debug(judge.publicKey + " error: " + err);
-
+                        } else {
+                            __cur.judgesSucc++;
                         }
 
-                        if(__cur.judgesSucc + __cur.judgesErr == __cur.judgesList.length) {
+                        if(__cur.judgesSucc + __cur.judgesErr >= __cur.judgesList.length) {
                             __cur.judgeDecision(block.height, function(err, blockId) {
                                 if(err) {
                                     library.logger.error(err);
