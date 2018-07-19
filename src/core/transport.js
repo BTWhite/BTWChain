@@ -22,6 +22,7 @@ __cur.unconfirmedBuff = [];
 __cur.unconfirmedTimer = null;
 __cur.judgesList = [];
 __cur.judgeBuff = [];
+__cur.judgeCache = [];
 
 // Constructor
 function Transport(cb, scope) {
@@ -325,6 +326,7 @@ __cur.attachApi = function () {
 
                     data.judgeVotes = library.protobuf.encodeBlockVotes(result).toString('base64');
                     // library.logger.log(data)
+                    var processed = false;
                     modules.transport.broadcastJudges({api: '/judge/accept', data: data, method: "POST"}, cb, function(err, data, judge) {
                         if (__cur.judgesSucc == undefined || __cur.judgesSucc == null || __cur.judgesSucc == NaN) {
                             __cur.judgesSucc = 0;
@@ -347,7 +349,7 @@ __cur.attachApi = function () {
                                     library.logger.error(err);
                                     return;
                                 }
-                                var processed = false;
+                                
                                 var judges = library.base.consensus.getJudges();
 
                                 for(var i = 0; i < judges.length; i++) {
@@ -358,17 +360,20 @@ __cur.attachApi = function () {
                                     if(item == null) continue;
 
                                     if(item.block.id == blockId) {
+                                        if (__cur.judgeCache[blockId]) {
+                                            break;
+                                        }
+                                        __cur.judgeCache[blockId] = true;
+
                                         library.logger.debug("Proccessing block " + blockId);
                                         modules.blocks.processBlock(item.block, item.votes, true, true, false, function (err) {
                                             if (err) {
                                                 library.logger.error("Failed to process confirmed block height: " + item.block.height + " id: " + item.block.id + " error: " + err);
                                                 return;
                                             }
-                                            __cur.judgesSucc = 0;
-                                            __cur.judgesErr = 0;
-                                            __cur.judgeBuff = [];
                                             library.logger.log('Sending new block id: ' + item.block.id);
                                             processed = true;
+
                                         });
                                         break;
                                     }
@@ -855,14 +860,14 @@ __cur.judgeSelect = function (block, votes, judgeVotes, cb) {
             __cur.judgeBuff[block.height] = [];
         }
 
-        if(__cur.judgeBuff[block.height][vote.key] != null) {
+        if(__cur.judgeBuff[block.height][vote.key.toString("hex")] != null) {
             library.logger.debug("Judge " + vote.key.toString("hex") + " already select block");
             return cb();
         }
 
-        __cur.judgeBuff[block.height][vote.key] = {block: block, votes: votes};
+        __cur.judgeBuff[block.height][vote.key.toString("hex")] = {block: block, votes: votes};
         library.logger.debug("Judge " + vote.key.toString("hex") + " select block " + block.id + " with height " + block.height);
-        result.signatures = vote;
+        result.signatures.push(vote);
         cb();
     }, function() {
         cb && cb(result);
@@ -878,17 +883,21 @@ __cur.judgeDecision = function(height, resultCb) {
     async.series([
         function (cb) {
             var judges = library.base.consensus.getJudges();
+
             for (var i = judges.length - 1; i >= 0; i--) {
+                var blockId = null;
                 if (__cur.judgeBuff[height][judges[i]] != null) {
-                    var blockId = __cur.judgeBuff[height][judges[i]].block.id;
+                    blockId = __cur.judgeBuff[height][judges[i]].block.id;
                 }
 
-                for (var i = versions.length - 1; i >= 0; i--) {
-                    if (versions[i] == blockId) {
+                for (var j = versions.length - 1; j >= 0; j--) {
+                    if (versions[j] == blockId) {
                         continue;
                     }
                 }
-                versions.push(blockId);
+                if (blockId != null) {
+                    versions.push(blockId);
+                }
             }
             cb();
         },
@@ -1241,6 +1250,11 @@ Transport.prototype.onSearchJudges = function () {
 }
 
 Transport.prototype.onNewBlock = function (block, votes, broadcast) {
+    __cur.judgesSucc = 0;
+    __cur.judgesErr = 0;
+    __cur.judgeBuff = [];
+    __cur.judgeCache = [];
+
     if (broadcast) {
         var data = {
             block: library.protobuf.encodeBlock(block).toString('base64'),
