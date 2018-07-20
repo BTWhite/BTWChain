@@ -174,6 +174,8 @@ Consensus.prototype.calcJudges = function (height, cb) {
   if (height == null) {
     height = modules.blocks.getLastBlock().height;
   }
+  height = height - (height % 101) + 1;
+  
   var round = modules.round.calc(height);
 
   modules.delegates.generateDelegateList(height, function (err, delegates) {
@@ -185,10 +187,9 @@ Consensus.prototype.calcJudges = function (height, cb) {
       var end = start + slots.judges;
       var judges = delegates.slice(start, end);
 
-      library.logger.debug("Next judges: " + judges + " ("+ start +", "+ end +")");
       library.base.consensus.setJudges(judges);
 
-      cb && cb(null);
+      cb && cb(null, judges);
   });
 }
 Consensus.prototype.setJudges = function (judges) {

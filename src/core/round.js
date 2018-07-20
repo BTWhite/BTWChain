@@ -606,9 +606,11 @@ Round.prototype.onBind = function (scope) {
     modules = scope;
     modules.delegates.beforeLoadMyDelegates(function() {
         setTimeout(function() {
-            modules.round.calcJudges(modules.blocks.getLastBlock().height, function(err) {
+            modules.round.calcJudges(modules.blocks.getLastBlock().height, function(err, judges) {
                 if(err) {
                     library.logger.error(err);
+                } else {
+                    library.logger.debug("Next judges: " + judges + " (height: "+ modules.blocks.getLastBlock().height +")");
                 }
             });
         }, 1000);
