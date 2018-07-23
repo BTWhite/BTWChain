@@ -344,42 +344,50 @@ __cur.attachApi = function () {
                             __cur.judgesSucc++;
                         }
 
+
                         if(__cur.judgesSucc + __cur.judgesErr >= __cur.judgesList.length) {
-                            __cur.judgeDecision(block.height, function(err, blockId) {
-                                if(err) {
-                                    library.logger.error(err);
-                                    return;
-                                }
-                                
-                                var judges = library.base.consensus.getJudges();
-
-                                for(var i = 0; i < judges.length; i++) {
-                                    if(processed == true) {
-                                        break;
+                            var done = function() {
+                                __cur.judgeDecision(block.height, function(err, blockId) {
+                                    if(err) {
+                                        library.logger.error(err);
+                                        return;
                                     }
-                                    var item = __cur.judgeBuff[block.height][judges[i]];
-                                    if(item == null) continue;
+                                    
+                                    var judges = library.base.consensus.getJudges();
 
-                                    if(item.block.id == blockId) {
-                                        if (__cur.judgeCache[blockId]) {
+                                    for(var i = 0; i < judges.length; i++) {
+                                        if(processed == true) {
                                             break;
                                         }
-                                        __cur.judgeCache[blockId] = true;
+                                        var item = __cur.judgeBuff[block.height][judges[i]];
+                                        if(item == null) continue;
 
-                                        library.logger.debug("Proccessing block " + blockId);
-                                        modules.blocks.processBlock(item.block, item.votes, true, true, false, function (err) {
-                                            if (err) {
-                                                library.logger.error("Failed to process confirmed block height: " + item.block.height + " id: " + item.block.id + " error: " + err);
-                                                return;
+                                        if(item.block.id == blockId) {
+                                            if (__cur.judgeCache[blockId]) {
+                                                break;
                                             }
-                                            library.logger.log('Sending new block id: ' + item.block.id);
-                                            processed = true;
+                                            __cur.judgeCache[blockId] = true;
 
-                                        });
-                                        break;
+                                            library.logger.debug("Proccessing block " + blockId);
+                                            modules.blocks.processBlock(item.block, item.votes, true, true, false, function (err) {
+                                                if (err) {
+                                                    library.logger.error("Failed to process confirmed block height: " + item.block.height + " id: " + item.block.id + " error: " + err);
+                                                    return;
+                                                }
+                                                library.logger.log('Sending new block id: ' + item.block.id);
+                                                processed = true;
+                                            });
+                                            break;
+                                        }
                                     }
-                                }
-                            });
+                                });
+                            }
+                            if (__cur.judgesErr > 0) {
+                                setTimeout(done, 2000);
+                            } else {
+                                done();
+                            }
+                            
                         }
                     });
                 });   
