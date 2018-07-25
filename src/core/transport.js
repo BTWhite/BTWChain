@@ -1233,7 +1233,7 @@ Transport.prototype.onSearchJudges = function () {
                     }
                 });
             } else {
-                library.logger.warn("Invalid judge " + data.body[i].publicKey);
+                library.logger.warn("Invalid judge");
             }
         }
     });
