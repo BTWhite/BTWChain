@@ -38,7 +38,6 @@ __cur.attachApi = function () {
     var router = new Router();
 
     router.use(function (req, res, next) {
-	if (req.url.startsWith("/judge")) return next();
         if (modules && __cur.loaded && !modules.loader.syncing()) return next();
         res.status(429).send({success: false, error: "Blockchain is loading"});
     });
