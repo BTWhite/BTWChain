@@ -20,8 +20,6 @@ module.exports = {
 
   delegates: 101,
 
-  judges: 5,
-
   getTime: function (time) {
     return getEpochTime(time);
   },

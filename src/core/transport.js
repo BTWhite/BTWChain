@@ -21,7 +21,6 @@ __cur.invalidTrsCache = new LimitCache();
 __cur.unconfirmedBuff = [];
 __cur.unconfirmedTimer = null;
 __cur.judgesList = [];
-__cur.judgeBuff = [];
 
 // Constructor
 function Transport(cb, scope) {
@@ -229,191 +228,6 @@ __cur.attachApi = function () {
         });
     });
 
-    router.post("/judge/blocks", function t(req, res) {
-        if(self.hasUnknownJudges()) {
-            library.bus.message("searchJudges");
-            setTimeout(function() {
-                t(req, null);
-            }, 1000);
-            res && res.set(__cur.headers);
-            return res && res.sendStatus(429);
-        }
-
-        res && res.set(__cur.headers);
-        var block = req.body.block;
-        if (typeof req.body.block == 'string') {
-            block = library.protobuf.decodeBlock(new Buffer(req.body.block, 'base64'));
-        }
-
-        var votes = req.body.votes;
-        if (typeof req.body.votes == 'string') {
-            votes = library.protobuf.decodeBlockVotes(new Buffer(req.body.votes, 'base64'));
-        }
-
-        try {
-            block = library.base.block.objectNormalize(block);
-            votes = library.base.consensus.normalizeVotes(votes);
-        } catch (e) {
-            library.logger.log('normalize block or votes object error: ' + e.toString());
-            library.logger.log('Block ' + (block ? block.id : 'null') + ' is not valid, ban 60 min');
-
-            return res && res.sendStatus(200);
-        }
-
-        var myJudges = [];
-        var activeKeypairs = [];
-        async.series([
-            function (cb) {
-                modules.blocks.verifyBlock(block, votes, function (err) {
-                    if (err) {
-                        return cb("Failed to verify block: " + err);
-                    }
-                    library.logger.debug("verify block ok");
-                    library.dbLite.query("SELECT id FROM blocks WHERE id=$id", {id: block.id}, ['id'], function (err, rows) {
-                        if (err) {
-                            return cb("Failed to query blocks from db: " + err);
-                        }
-                        var bId = rows.length && rows[0].id;
-                        if (bId && save) {
-                            return cb("Block already exists: " + block.id);
-                        }
-
-                        modules.delegates.validateBlockSlot(block, function (err) {
-                            if (err) {
-                                return cb("Can't verify slot: " + err);
-                            } else {
-                                cb();
-                            }
-                        });
-                    });
-                });
-            },
-            function (cb) {
-                modules.transport.getMyJudges(function(err, judges) {
-                    if (err) {
-                        cb(err);
-                    }
-                    myJudges = judges;
-                    cb();
-                });
-            },
-            function (cb) {
-
-                modules.delegates.getActiveDelegateKeypairs(block.height, function (err, delegates) {
-                    if (err) {
-                        return cb(err);
-                    }
-                    for (var j = myJudges.length - 1; j >= 0; j--) {
-                        for (var i = delegates.length - 1; i >= 0; i--) {
-                            if(myJudges[j] == delegates[i].publicKey.toString("hex")) {
-                                activeKeypairs.push(delegates[i]);
-                            }
-
-                        }
-                    }
-                    cb();
-                });
-            },
-            function (cb) {
-                if (myJudges.length === 0) {
-                    return cb(); 
-                }
-                
-                var judgeVotes = library.base.consensus.createVotes(activeKeypairs, block);
-                var data = req.body;
-
-                library.logger.debug("Judges sign, count: " + activeKeypairs.length);
-
-                __cur.judgeSelect(block, votes, judgeVotes, function (result) {
-                    if (result == null) return;
-
-                    data.judgeVotes = library.protobuf.encodeBlockVotes(result).toString('base64');
-                    // library.logger.log(data)
-                    modules.transport.broadcastJudges({api: '/judge/accept', data: data, method: "POST"}, cb, function(err, data, judge) {
-                        if (__cur.judgesSucc == undefined || __cur.judgesSucc == null || __cur.judgesSucc == NaN) {
-                            __cur.judgesSucc = 0;
-                        }
-
-                        __cur.judgesSucc++;
-                        if (__cur.judgesErr == undefined || __cur.judgesErr == null || __cur.judgesSucc == NaN) {
-                            __cur.judgesErr = 0;
-                        }
-
-                        if (err) {    
-                            __cur.judgesErr++;
-                            library.logger.debug(judge.publicKey + " error: " + err);
-
-                        }
-
-                        if(__cur.judgesSucc + __cur.judgesErr == slots.judges) {
-                            __cur.judgeDecision(block.height, function(err, blockId) {
-                                if(err) {
-                                    library.logger.error(err);
-                                    return;
-                                }
-                                var processed = false;
-                                var judges = library.base.consensus.getJudges();
-
-                                for(var i = 0; i < judges.length; i++) {
-                                    if(processed == true) {
-                                        break;
-                                    }
-                                    var item = __cur.judgeBuff[block.height][judges[i]];
-                                    if(item == null) continue;
-
-                                    if(item.block.id == blockId) {
-                                        library.logger.debug("Proccessing block " + blockId);
-                                        modules.blocks.processBlock(item.block, item.votes, true, true, false, function (err) {
-                                            if (err) {
-                                                library.logger.error("Failed to process confirmed block height: " + item.block.height + " id: " + item.block.id + " error: " + err);
-                                                return;
-                                            }
-                                            __cur.judgesSucc = 0;
-                                            __cur.judgesErr = 0;
-                                            __cur.judgeBuff = [];
-                                            library.logger.log('Sending new block id: ' + item.block.id);
-                                            processed = true;
-                                        });
-                                        break;
-                                    }
-                                }
-                            });
-                        }
-                    });
-                });   
-            }
-        ], function (err) {
-            if (err) {
-                library.logger.error("Judges verify block error: " + err);
-            }
-            res && res.sendStatus(200);
-        });
-        
-
-    });
-
-    router.post("/judge/accept", function(req, res) {
-        res.set(__cur.headers);
-        if (typeof req.body.block == 'string') {
-            req.body.block = library.protobuf.decodeBlock(new Buffer(req.body.block, 'base64'));
-        }
-        
-        if (typeof req.body.votes == 'string') {
-            req.body.votes = library.protobuf.decodeBlockVotes(new Buffer(req.body.votes, 'base64'));
-        }
-
-        if (typeof req.body.judgeVotes == 'string') {
-            req.body.judgeVotes = library.protobuf.decodeBlockVotes(new Buffer(req.body.judgeVotes, 'base64'));
-        }
-
-        
-        __cur.judgeSelect(req.body.block, req.body.votes, req.body.judgeVotes, function(result) {
-            
-            res.sendStatus(200);
-        });
-        
-    });
-
     router.post("/blocks", function (req, res) {
         res.set(__cur.headers);
 
@@ -439,7 +253,6 @@ __cur.attachApi = function () {
             return res.sendStatus(200);
         }
 
-        
         library.bus.message('receiveBlock', block, votes);
         res.sendStatus(200);
     });
@@ -794,23 +607,27 @@ __cur.attachApi = function () {
                 return res.status(200).json({success: false, error: "Schema validation error"});
             }
 
-            self.addJudge(req.body.judge, function (err) {
-                if (err) {
-                    library.logger.debug("Received invalid judge: " + err);
-                } else {
-                    library.logger.debug("Judge accepted: " + req.body.judge.publicKey);
+            for (var i = __cur.judgesList.length - 1; i >= 0; i--) {
+                if (__cur.judgesList[i].publicKey == req.body.judge.publicKey) {
+                    library.logger.debug('Judge already processed: ' + req.body.judge.publicKey);
+                    return res.sendStatus(200);
                 }
+            }
 
-                return res.sendStatus(200);
-            });
-            
-            
+            var judges = library.base.consensus.getJudges();
+
+            for (var i = judges.length - 1; i >= 0; i--) {
+                if (judges[i] == req.body.judge.publicKey) {
+                    library.logger.debug("Judge accepted: " + req.body.judge.publicKey);
+                    library.bus.message("judge", req.body.judge, true);
+                    __cur.judgesList.push(req.body.judge);
+                    return res.sendStatus(200);
+                }
+            }
+
+            library.logger.debug("Received invalid judge: " + req.body.judge.publicKey);
+            return res.sendStatus(200);
         });
-    });
-
-    router.get('/judge', function(req, res) {
-        res.set(__cur.headers);
-        res.status(200).json(__cur.judgesList);
     });
 
     router.use(function (req, res, next) {
@@ -837,140 +654,12 @@ __cur.hashsum = function (obj) {
     return bignum.fromBuffer(temp).toString();
 };
 
-__cur.judgeSelect = function (block, votes, judgeVotes, cb) {
-    var result = {
-        id: judgeVotes.id,
-        height: judgeVotes.height,
-        signatures: []
-    };
-
-    async.eachSeries(judgeVotes.signatures, function (vote, cb) {
-        if (!library.base.consensus.isValidJudge(vote.key.toString("hex"))) {
-            library.logger.warn("Received invalid judge: " + vote.key.toString("hex"));
-            return cb();
-        }
-
-        if (!library.base.consensus.verifyVote(block.height, block.id, vote)) {
-            library.logger.warn("Received invalid vote by judge: " + vote.key.toString("hex"));
-            return cb();
-        }
-
-        if(!util.isArray(__cur.judgeBuff[block.height])) {
-            __cur.judgeBuff[block.height] = [];
-        }
-
-        if(__cur.judgeBuff[block.height][vote.key] != null) {
-            library.logger.debug("Judge " + vote.key.toString("hex") + " already select block");
-            return cb();
-        }
-
-        __cur.judgeBuff[block.height][vote.key] = {block: block, votes: votes};
-        library.logger.debug("Judge " + vote.key.toString("hex") + " select block " + block.id + " with height " + block.height);
-        result.signatures = vote;
-        cb();
-    }, function() {
-        cb && cb(result);
-    });
-}
-
-__cur.judgeDecision = function(height, resultCb) {
-    if (!util.isArray(__cur.judgeBuff[height])) {
-        return cb(false);
-    }
-
-    var versions = [];
-    async.series([
-        function (cb) {
-            var judges = library.base.consensus.getJudges();
-            for (var i = judges.length - 1; i >= 0; i--) {
-                if (__cur.judgeBuff[height][judges[i]] != null) {
-                    var blockId = __cur.judgeBuff[height][judges[i]].block.id;
-                }
-
-                for (var i = versions.length - 1; i >= 0; i--) {
-                    if (versions[i] == blockId) {
-                        continue;
-                    }
-                }
-                versions.push(blockId);
-            }
-            cb();
-        },
-        function (cb) {
-            if (versions.length == 0) {
-                cb();
-                return resultCb("No offers for blocks", null);
-            } else if (versions.length == 1) {
-                cb();
-                return resultCb(null, versions[0]);
-            } else {
-                var tmp = versions.sort(function(a, b){
-                    if(a < b) return -1;
-                    if(a > b) return 1;
-                    return 0;
-                });
-                return resultCb(null, tmp[0]);
-            }
-        }
-    ]);
-}
-
-Transport.prototype.hasUnknownJudges = function () {
-  var judges = library.base.consensus.getJudges();
-
-  if (__cur.judgesList.length < judges.length || judges.length == 0) {
-    return true;
-  }
-  return false;
-}
-
-Transport.prototype.getMyJudges = function (cb) {
-    modules.delegates.getActiveDelegateKeypairs(modules.blocks.getLastBlock().height, function (err, activeKeypairs) {
-        
-        if (err) {
-            cb("Failed to get active keypairs: " + err);
-        } else {
-            var judges = library.base.consensus.getJudges();
-            var result = [];
-            for (var i = activeKeypairs.length - 1; i >= 0; i--) {
-                
-                var publicKey = activeKeypairs[i].publicKey.toString("hex");
-                var j = judges.indexOf(publicKey);
-                if(j != -1) {
-                    result.push(judges[j]);
-                }
-            }
-            cb(null, result);
-        }
-    });
-}
-
-Transport.prototype.addJudge = function (judge, cb) {
-    for (var i = __cur.judgesList.length - 1; i >= 0; i--) {
-        if (__cur.judgesList[i].publicKey == judge.publicKey) {
-            return cb('Judge already processed: ' + judge.publicKey);
-        }
-    }
-    var judges = library.base.consensus.getJudges();
-
-    for (var i = judges.length - 1; i >= 0; i--) {
-        if (judges[i] == judge.publicKey) {
-            __cur.judgesList.push(judge);
-            library.bus.message("judge", judge, true);
-            return cb();
-        }
-    }
-    
-    return cb('Judge is not valid: ' + judge.publicKey);
-}
-
-Transport.prototype.broadcast = function (config, options, cb, itemCb) {
-
+Transport.prototype.broadcast = function (config, options, cb) {
     config.limit = 30;
-    modules.peer.list(config, function (err, peers) {        
+    modules.peer.list(config, function (err, peers) {
         if (!err) {
             async.eachLimit(peers, 5, function (peer, cb) {
-                self.getFromPeer(peer, options, itemCb);
+                self.getFromPeer(peer, options);
 
                 setImmediate(cb);
             }, function () {
@@ -981,27 +670,6 @@ Transport.prototype.broadcast = function (config, options, cb, itemCb) {
         }
     });
 };
-
-Transport.prototype.broadcastJudges = function(options, cb, itemCb) {
-   var cache = [];
-   if (__cur.judgesList == null) return;
-
-   async.eachLimit(__cur.judgesList, 5, function (judge, cb) {
-        if(cache[judge.address]) {
-            itemCb && itemCb(null, null, judge);
-            return setImmediate(cb);
-        }
-
-        cache[judge.address] = true;
-        self.getFromPeer({address: judge.address}, options, function(err, data) {
-            itemCb && itemCb(err, data, judge);
-        });
-
-        setImmediate(cb);
-    }, function () {
-        cb && cb(null, {body: null});
-    })
-}
 
 Transport.prototype.getFromRandomPeer = function (config, options, cb) {
     if (typeof options == 'function') {
@@ -1099,8 +767,6 @@ Transport.prototype.getFromPeer = function (peer, options, cb) {
             }
             cb && cb(err || ('request status code' + response.statusCode), {body: body, peer: peer});
             return;
-        } else {
-            library.logger.debug(req.method + " " + req.url);
         }
 
         response.headers['port'] = parseInt(response.headers['port']);
@@ -1170,10 +836,6 @@ Transport.prototype.onBind = function (scope) {
 
 Transport.prototype.onBlockchainReady = function () {
     __cur.loaded = true;
-
-    if (self.hasUnknownJudges()) {
-        library.bus.message("searchJudges");
-    } 
 };
 
 Transport.prototype.onSignature = function (signature, broadcast) {
@@ -1184,7 +846,6 @@ Transport.prototype.onSignature = function (signature, broadcast) {
 };
 
 Transport.prototype.onJudge = function (judge, broadcast) {
-
     if (broadcast) {
         self.broadcast({}, {api: '/judge', data: {judge: judge}, method: "POST"});
     }
@@ -1221,28 +882,6 @@ Transport.prototype.onUnconfirmedTransaction = function (transaction, broadcast)
         library.network.io.sockets.emit('transactions/change', {});
     }
 };
-
-Transport.prototype.onSearchJudges = function () {
-    self.broadcast({}, {api: '/judge', data: {}, method: "GET"}, null, function (err, data) {
-        if (err != null) {
-            return library.logger.log(err);
-        }
-        for (var i = data.body.length - 1; i >= 0; i--) {
-            
-            if (library.base.consensus.isValidJudge(data.body[i])) {
-                self.addJudge(data.body[i], function(err) {
-                    if (err) {
-                        library.logger.debug("Received invalid judge: " + err);
-                    } else {
-                        library.logger.debug("Judge accepted: " + data.body[i].publicKey);
-                    }
-                });
-            } else {
-                library.logger.warn("Invalid judge");
-            }
-        }
-    });
-}
 
 Transport.prototype.onNewBlock = function (block, votes, broadcast) {
     if (broadcast) {

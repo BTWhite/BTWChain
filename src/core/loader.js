@@ -452,14 +452,6 @@ Loader.prototype.startSyncBlocks = function () {
     library.logger.debug('startSyncBlocks enter');
     if (__cur.isActive || !__cur.loaded || self.syncing()) return;
     __cur.isActive = true;
-
-    if (modules.transport.hasUnknownJudges()) {
-        library.logger.debug("Judges not ready");
-        library.bus.message("searchJudges");
-    } else {
-        library.logger.debug("Judges ready");
-    }
-
     library.sequence.add(function syncBlocks(cb) {
         library.logger.debug('startSyncBlocks enter sequence');
         __cur.syncTrigger(true);
