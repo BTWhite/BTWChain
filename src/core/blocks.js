@@ -1357,11 +1357,9 @@ Blocks.prototype.onReceivePropose = function (propose) {
     library.logger.debug("onReceivePropose enter");
 
     if (modules.loader.syncing() || !__cur.loaded) {
-        library.logger.debug("Blockchain is loading");
         return;
     }
     if (__cur.proposeCache[propose.hash]) {
-        library.logger.debug("Propose already proccessed");
         return;
     }
     __cur.proposeCache[propose.hash] = true;
