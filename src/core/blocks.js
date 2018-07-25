@@ -1324,10 +1324,10 @@ Blocks.prototype.onReceiveBlock = function (block, votes) {
         return;
     }
 
-    /*if (__cur.lastPropose && __cur.lastPropose.height == block.height && __cur.lastPropose.id != block.id) {
+    if (__cur.lastPropose && __cur.lastPropose.height == block.height && __cur.lastPropose.id != block.id) {
         library.logger.error('The block '+ block.id +' received differs from the last propose');  
         return;
-    }*/
+    }
 
     __cur.blockCache[block.id] = true;
 
