@@ -1460,7 +1460,7 @@ Blocks.prototype.onReceiveVotes = function (votes) {
             var id = block.id;
             var data = {
                 block: library.protobuf.encodeBlock(block).toString('base64'),
-                votes: library.protobuf.encodeBlockVotes(totalVotes).toString('base64')
+                votes: library.protobuf.encodeBlockVotes(votes).toString('base64')
             };
             modules.transport.broadcastJudges({api: '/judge/blocks', data: data, method: "POST"}, cb);
             /*
