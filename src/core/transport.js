@@ -23,7 +23,6 @@ __cur.unconfirmedTimer = null;
 __cur.judgesList = [];
 __cur.judgeBuff = [];
 __cur.judgeCache = [];
-__cur.judgeSlot = null;
 
 // Constructor
 function Transport(cb, scope) {
@@ -516,7 +515,6 @@ __cur.attachApi = function () {
             if (err) {
                 return res.status(200).json({success: false, error: "Schema validation error"});
             }
-
             library.bus.message('receivePropose', req.body.propose);
             res.sendStatus(200);
         });
@@ -1268,19 +1266,6 @@ Transport.prototype.onNewBlock = function (block, votes, broadcast) {
 };
 
 Transport.prototype.onNewPropose = function (propose, broadcast) {
-    library.logger.log("judgeSlot: " + library.base.consensus.calcJudgeSlot());
-    if (__cur.judgeSlot == null) {
-        __cur.judgeSlot = library.base.consensus.calcJudgeSlot();
-    }
-
-    if(__cur.judgeSlot != library.base.consensus.calcJudgeSlot()) {
-        library.logger.log("Calcing new judges: ");
-        modules.round.calcJudges(modules.blocks.getLastBlock().height, function(err, judges) {
-            library.logger.log("Judges: " + judges);
-            __cur.judgeSlot = library.base.consensus.calcJudgeSlot();
-        });
-    }
-
     if (broadcast) {
         var data = {
             propose: library.protobuf.encodeBlockPropose(propose).toString('base64')

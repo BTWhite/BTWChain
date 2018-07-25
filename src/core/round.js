@@ -556,7 +556,6 @@ Round.prototype.tick = function (block, cb) {
 
 Round.prototype.calcJudges = function (height, done) {
     var round = self.calc(height);
-    var judges = [];
 
     async.series([
         function (cb) {
@@ -570,7 +569,7 @@ Round.prototype.calcJudges = function (height, done) {
                 if (err) {
                     cb("Failed to get active keypairs: " + err);
                 } else {
-                    judges = library.base.consensus.getJudges();
+                    var judges = library.base.consensus.getJudges();
                         
                     for (var i = activeKeypairs.length - 1; i >= 0; i--) {
                         
@@ -593,7 +592,7 @@ Round.prototype.calcJudges = function (height, done) {
         }
 
     ], function(err) {
-        done && done(err, judges);
+        done && done(err);
     });
     
 }

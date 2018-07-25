@@ -170,16 +170,10 @@ Consensus.prototype.getJudges = function () {
   return this.judges;
 }
 
-Consensus.prototype.calcJudgeSlot = function () {
-  return Math.floor(slots.getSlotNumber() / (slots.delegates)) % (slots.delegates - slots.judges)
-}
-
 Consensus.prototype.calcJudges = function (height, cb) {
   if (height == null) {
     height = modules.blocks.getLastBlock().height;
   }
-
-  var slot = this.calcJudgeSlot();
   height = height - (height % 101) + 1;
   
   var round = modules.round.calc(height);
@@ -189,10 +183,10 @@ Consensus.prototype.calcJudges = function (height, cb) {
           return cb && cb(err);
       }
 
-      var start = slot;
+      var start = round % (slots.delegates - 10);
       var end = start + slots.judges;
       var judges = delegates.slice(start, end);
-      
+
       library.base.consensus.setJudges(judges);
 
       cb && cb(null, judges);
