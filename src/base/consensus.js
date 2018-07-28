@@ -57,13 +57,7 @@ Consensus.prototype.getVoteHash = function (height, id) {
 }
 
 Consensus.prototype.hasEnoughVotes = function (votes) {
-  
-  if(votes && votes.height < 626500){
-    return votes && votes.signatures && votes.signatures.length > 20;
-  } else {
     return votes && votes.signatures && votes.signatures.length > slots.delegates * 2 / 3;
-  }
-
 }
 
 Consensus.prototype.hasEnoughVotesRemote = function (votes) {

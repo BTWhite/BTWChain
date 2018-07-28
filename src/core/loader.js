@@ -123,17 +123,14 @@ __cur.findUpdate = function (lastBlock, peer, cb) {
                     },
                     function (next) {
                         library.logger.info('start to roll back blocks before ' + commonBlock.height);
-                        next();
-                        //modules.round.directionSwap('backward', lastBlock, next);
+                        modules.round.directionSwap('backward', lastBlock, next);
                     },
                     function (next) {
-			next();
                         library.bus.message('deleteBlocksBefore', commonBlock);
-                        //modules.blocks.deleteBlocksBefore(commonBlock, next);
+                        modules.blocks.deleteBlocksBefore(commonBlock, next);
                     },
                     function (next) {
-			next();
-                        //modules.round.directionSwap('forward', lastBlock, next);
+                        modules.round.directionSwap('forward', lastBlock, next);
                     }
                 ], function (err) {
                     if (err) {

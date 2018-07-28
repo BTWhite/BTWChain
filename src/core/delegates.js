@@ -551,7 +551,7 @@ Delegates.prototype.validateProposeSlot = function (propose, cb) {
             return cb();
         }
 
-        cb("Failed to validate propose slot");
+        cb("Expected delegate: " + delegateKey + ", generator: " + propose.generatorPublicKey);
     });
 }
 

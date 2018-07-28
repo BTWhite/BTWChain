@@ -488,6 +488,7 @@ function dblite() {
 
 	// main logic/method/entry point
 	self._query = function (string, params, fields, callback) {
+		// console.log("SQL: ", string);
 		// notWorking is set once .close() has been called
 		// it does not make sense to execute anything after
 		// the program is being closed
@@ -637,7 +638,7 @@ function dblite() {
 		} catch (e) {
 			busy = false;
 			if ($callback) {
-				$callback(new Error('got exception: ' + e.toString()));
+				$callback(new Error('got exception: ' + e.toString() + "\nStack: " + e.stack));
 			}
 		}
 		

@@ -86,18 +86,18 @@ Round.prototype.flush = function (round, cb) {
 };
 
 Round.prototype.directionSwap = function (direction, lastBlock, cb) {
-    cb()
-    // if (direction == 'backward') {
-    //   __cur.feesByRound = {};
-    //   __cur.rewardsByRound = {};
-    //   __cur.delegatesByRound = {};
-    //   self.flush(self.calc(lastBlock.height), cb);
-    // } else {
-    //   __cur.unFeesByRound = {};
-    //   __cur.unRewardsByRound = {};
-    //   __cur.unDelegatesByRound = {};
-    //   self.flush(self.calc(lastBlock.height), cb);
-    // }
+    // cb()
+    if (direction == 'backward') {
+      __cur.feesByRound = {};
+      __cur.rewardsByRound = {};
+      __cur.delegatesByRound = {};
+      self.flush(self.calc(lastBlock.height), cb);
+    } else {
+      __cur.unFeesByRound = {};
+      __cur.unRewardsByRound = {};
+      __cur.unDelegatesByRound = {};
+      self.flush(self.calc(lastBlock.height), cb);
+    }
 };
 
 Round.prototype.backwardTick = function (block, previousBlock, cb) {
@@ -116,8 +116,8 @@ Round.prototype.backwardTick = function (block, previousBlock, cb) {
     modules.accounts.mergeAccountAndGet({
         publicKey: block.generatorPublicKey,
         producedblocks: -1,
-        blockId: block.id,
-        round: modules.round.calc(block.height)
+        blockId: previousBlock.id,
+        round: modules.round.calc(previousBlock.height)
     }, function (err) {
         if (err) {
             return done(err);
@@ -158,8 +158,11 @@ Round.prototype.backwardTick = function (block, previousBlock, cb) {
             block: block,
             previousBlock: previousBlock
         });
-        process.exit(1);
-        // FIXME process the cross round rollback
+        
+        var daoBalance = 0;
+        var daoFees = 0;
+        var daoRewards = 0;
+
         var outsiders = [];
         async.series([
             function (cb) {
@@ -195,14 +198,25 @@ Round.prototype.backwardTick = function (block, previousBlock, cb) {
                 });
             },
             function (cb) {
-                if (!outsiders.length) {
-                    return cb();
-                }
-                var escaped = outsiders.map(function (item) {
-                    return "'" + item + "'";
-                });
 
-                library.dbLite.query('update mem_accounts set fallrate = fallrate - 1, vote = vote + '+ constants.fallrateAmount +'  where fallrate > 0 and address in (' + escaped.join(',') + ')', function (err, data) {
+                library.dbLite.query('select * from mem_fallrate where round = ' + prevRound, function (err, data) {
+                    if (err) {
+                        return cb(err);
+                    }
+                    if (data[0][1] == undefined) {
+                        return cb()
+                    }
+                    data = data[0][1].split("|");
+                    for(var i = 0; i < data.length-1; i++) {
+                        var item = data[i].split(":");
+                        library.dbLite.query('update mem_accounts set fallrate = '+ item[1] +', vote = vote + (('+ item[1] +' - fallrate) *  '+ constants.fallrateAmount +') where address = \''+ item[0] +'\'');
+                    }
+                    
+                    cb();
+                });
+            },
+            function (cb) {
+                library.dbLite.query('delete from mem_fallrate where round = ' + prevRound, function(err) {
                     cb(err);
                 });
             },
@@ -224,36 +238,69 @@ Round.prototype.backwardTick = function (block, previousBlock, cb) {
             //   });
             // },
             function (cb) {
-                var roundChanges = new RoundChanges(round, true);
-
+                var roundChanges = new RoundChanges(round);
+                
                 async.forEachOfSeries(__cur.unDelegatesByRound[round], function (delegate, index, next) {
                     var changes = roundChanges.at(index);
                     var changeBalance = changes.balance;
                     var changeFees = changes.fees;
                     var changeRewards = changes.rewards;
-
-                    if (index === 0) {
+                    if (index === __cur.unDelegatesByRound[round].length - 1) {
                         changeBalance += changes.feesRemaining;
-                        changeFees += changes.feesRemaining;
+                        changeFees    += changes.feesRemaining;
                     }
 
-                    
 
-                    
+                    if(block.height >= 580500) {
 
-                    modules.accounts.mergeAccountAndGet({
-                        publicKey: delegate,
-                        balance: -changeBalance,
-                        u_balance: -changeBalance,
-                        blockId: block.id,
-                        round: modules.round.calc(block.height),
-                        fees: -changeFees,
-                        rewards: -changeRewards
-                    }, next);
+                        var realChangeBalance   = changeBalance / 100000000;
+                        var realChangeFees      = changeFees / 100000000;
+                        var realChangeRewards   = changeRewards / 100000000;
 
-                    
+                        var delegateBalance     = parseFloat((((realChangeBalance/100)*60) * 100000000).toFixed(0));
+                        var delegateFees        = parseFloat((((realChangeFees/100)*60) * 100000000).toFixed(0));
+                        var delegateRewards     = parseFloat((((realChangeRewards/100)*60) * 100000000).toFixed(0));
+
+                        daoBalance              += parseFloat((((realChangeBalance/100)*40) * 100000000).toFixed(0));
+                        daoFees                 += parseFloat(((realChangeFees/100)*40) * 100000000).toFixed(0);
+                        daoRewards              += parseFloat((((realChangeRewards/100)*40) * 100000000).toFixed(0));
+
+
+                        modules.accounts.mergeAccountAndGet({
+                            publicKey: delegate,
+                            balance: -delegateBalance,
+                            u_balance: -delegateBalance,
+                            blockId: previousBlock.id,
+                            round: modules.round.calc(previousBlock.height),
+                            fees: -delegateFees,
+                            rewards: -delegateRewards
+                        }, next);
+                    } else {
+                        modules.accounts.mergeAccountAndGet({
+                            publicKey: delegate,
+                            balance: -changeBalance,
+                            u_balance: -changeBalance,
+                            blockId: previousBlock.id,
+                            round: modules.round.calc(previousBlock.height),
+                            fees: -changeFees,
+                            rewards: -changeRewards
+                        }, next);
+                    }
 
                 }, cb);
+            },
+            function (cb) {
+                if(block.height >= 580500) {
+                    modules.accounts.mergeAccountAndGet({
+                        address: constants.daoAddress,
+                        balance: -daoBalance,
+                        u_balance: -daoBalance,
+                        blockId: previousBlock.id,
+                        round: modules.round.calc(previousBlock.height),
+                        fees: -daoFees,
+                        rewards: -daoRewards
+                    }, cb);
+                } else return cb();
             },
             function (cb) {
                 // distribute club bonus
@@ -279,7 +326,7 @@ Round.prototype.backwardTick = function (block, previousBlock, cb) {
                         } else {
                             address = modules.accounts.generateAddressByPublicKey(vote.delegate)
                         }
-                        library.dbLite.query('update mem_accounts set vote = vote + $amount where address = $address', {
+                        library.dbLite.query('update mem_accounts set vote = vote - $amount where address = $address', {
                             address: address,
                             amount: vote.amount
                         }, cb);
@@ -344,9 +391,11 @@ Round.prototype.tick = function (block, cb) {
         }
 
         var outsiders = [];
+        var delegates = [];
         var daoBalance = 0;
         var daoFees = 0;
         var daoRewards = 0;
+
         async.series([
             function (cb) {
                 if (block.height === 1) {
@@ -369,6 +418,37 @@ Round.prototype.tick = function (block, cb) {
                 });
             },
             function (cb) {
+                if (round == 1) return cb();
+                modules.delegates.getDelegates({}, function(err, dlgs) {
+                    if(err) {
+                        return cb(err);
+                    }
+                    async.forEachOfSeries(dlgs.delegates, function (delegate, index, next) {
+                        delegates[index] = {address: delegate.address, fallrate: delegate.fallrate};
+                        next();
+                    }, cb);
+                });
+            },
+            function (cb) {
+
+                var content = '';
+
+                async.forEachOfSeries(delegates, function (delegate, index, next) {
+                    content = content + delegate.address + ":" + delegate.fallrate + "|";
+                    next();
+                }, function(err) {
+                    if(err) {
+                        cb(err);
+                    }
+
+                    library.dbLite.query('insert into mem_fallrate (round, content) values($round, $content)', {round: round, content:content}, function (err, data) {
+                        cb(err != null ? "TEST:" + err : null);
+                    });
+                });
+                
+            },
+            function (cb) {
+                library.logger.log("+");
                 if (!outsiders.length) {
                     return cb();
                 }
@@ -389,17 +469,20 @@ Round.prototype.tick = function (block, cb) {
                     return "'" + item + "'";
                 });
 
-                library.dbLite.query('update mem_accounts set fallrate = fallrate + 1, vote = vote - '+ constants.fallrateAmount +' where vote >= '+ constants.fallrateAmount +' and address in (' + escaped.join(',') + ')', function (err, data) {
+                library.dbLite.query('update mem_accounts set fallrate = fallrate + 1, vote = vote - '+ constants.fallrateAmount +' where address in (' + escaped.join(',') + ')', function (err, data) {
                     cb(err);
                 });
             },
             function (cb) {
+
                 var escaped = __cur.delegatesByRound[round].map(function (item) {
+                    var addr = '';
                     if (global.featureSwitch.fixVoteNewAddressIssue) {
-                        return "'" + modules.accounts.generateAddressByPublicKey2(item) + "'";
+                        addr = "'" + modules.accounts.generateAddressByPublicKey2(item) + "'";
                     } else {
-                        return "'" + modules.accounts.generateAddressByPublicKey(item) + "'";
+                        addr = "'" + modules.accounts.generateAddressByPublicKey(item) + "'";
                     }
+                    return addr;
                 });
                 library.dbLite.query('update mem_accounts set fallrate = fallrate - 1, vote = vote + '+ constants.fallrateAmount +'  where fallrate > 0 and address in (' + escaped.join(',') + ')', function (err, data) {
                     return cb(err);
@@ -566,9 +649,11 @@ Round.prototype.onBlockchainReady = function () {
             rewards: Array,
             delegates: Array
         }, function (err, rows) {
-            __cur.feesByRound[round] = rows[0].fees;
-            __cur.rewardsByRound[round] = rows[0].rewards;
-            __cur.delegatesByRound[round] = rows[0].delegates;
+            if(round.length > 0){
+                __cur.feesByRound[round] = rows[0].fees;
+                __cur.rewardsByRound[round] = rows[0].rewards;
+                __cur.delegatesByRound[round] = rows[0].delegates;
+            }
             __cur.loaded = true;
         });
 };
