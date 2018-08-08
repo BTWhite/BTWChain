@@ -448,7 +448,6 @@ Round.prototype.tick = function (block, cb) {
                 
             },
             function (cb) {
-                library.logger.log("+");
                 if (!outsiders.length) {
                     return cb();
                 }
@@ -649,10 +648,15 @@ Round.prototype.onBlockchainReady = function () {
             rewards: Array,
             delegates: Array
         }, function (err, rows) {
-            if(round.length > 0){
+            if (err) {
+                library.logger.error("Loading round info failed", err);
+            }
+            if(rows.length > 0){
                 __cur.feesByRound[round] = rows[0].fees;
                 __cur.rewardsByRound[round] = rows[0].rewards;
                 __cur.delegatesByRound[round] = rows[0].delegates;
+            } else {
+                library.logger.warn("Loading round info is empty");
             }
             __cur.loaded = true;
         });
